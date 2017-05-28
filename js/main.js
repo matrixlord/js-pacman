@@ -14,6 +14,7 @@ direction = 0;
 
 // Pacman size.
 pacmanSize = 30;
+halfSize = 15;
 
 // Position interval.
 positionInterval = 10;
@@ -27,7 +28,11 @@ walls = [
   [[0, 0], 10, 600],
   [[40, 0], 10, 300],
   [[40, 330], 300, 10],
+  [[300, 0], 10, 300],
 ];
+
+// Rendered walls.
+wallContexts = [];
 
 function pacmanGame() {
   // Set background.
@@ -52,7 +57,7 @@ function pacmanGame() {
 
   // Set pacman position.
   canvasContext.fillStyle = "yellow";
-  canvasContext.fillRect(px - 15, py - 15, pacmanSize, pacmanSize);
+  canvasContext.fillRect(px - halfSize, py - halfSize, pacmanSize, pacmanSize);
 
   // Create walls.
   createWalls();
@@ -63,55 +68,87 @@ function pacmanGame() {
 
 // Create walls.
 function createWalls() {
-  for (var i = 0; i < walls.length; i++) {
+  if (wallContexts.length == 0) {
+    for (var i = 0; i < walls.length; i++) {
+      var canvasWall = document.createElement("canvas"),
+      wallContext = canvasWall.getContext("2d");
+      canvasWall.width = canvasWall.height = 600;
 
-    // Get line.
-    x = walls[i][0][0];
-    y = walls[i][0][1];
-    width = walls[i][1];
-    height = walls[i][2];
+      // Get line.
+      x = walls[i][0][0];
+      y = walls[i][0][1];
+      width = walls[i][1];
+      height = walls[i][2];
 
-    // canvasContext.beginPath();
-    // canvasContext.moveTo(x0, y0);
-    // canvasContext.lineTo(x1, y1);
-    // canvasContext.lineWidth = 10;
-    // canvasContext.strokeStyle = '#0000FF';
-    // canvasContext.stroke();
+      wallContext.strokeStyle = '#0000FF';
+      wallContext.rect(x, y, width, height);
+      wallContext.stroke();
 
-    // canvasContext.fillStyle = "blue";
-    canvasContext.strokeStyle = '#0000FF';
-    canvasContext.rect(x, y, width, height);
-    canvasContext.stroke();
-
-    // Get if pacman is in path.
-    if (canvasContext.isPointInPath(px, py)) {
-      // Substruct based on direction to return to previous position.
-      switch(direction) {
-        case 1:
-          py = py - 2 * positionInterval;
-          break;
-        case 2:
-          px = px - 2 * positionInterval;
-          break;
-        case 3:
-          py = py + 2 * positionInterval;
-          break;
-        case 4:
-          px = px + 2 * positionInterval;
-          break;
-      }
-
-      // Stop movement.
-      direction = 0;
+      wallContexts.push(wallContext);
     }
   }
+  else {
+    for (var i = 0; i < wallContexts.length; i++) {
+      canvasContext.drawImage(wallContexts[i].canvas, 0, 0);
+    }
+  }
+
 }
 
 // Detect wall collision and stop pacman.
 function detectWallCollision() {
-  for (var i = 0; i < walls.length; i++) {
+  for (var i = 0; i < wallContexts.length; i++) {
+    // Get if pacman is in path.
+    if (direction != 0) {
 
+      // Check different points based on direction.
+      switch(direction) {
+        case 1:
+          if (wallContexts[i].isPointInPath(px + halfSize - 1, py + halfSize)
+            || wallContexts[i].isPointInPath(px, py + halfSize)
+            || wallContexts[i].isPointInPath(px - halfSize - 1, py + halfSize)) {
+              direction = 0;
+          }
+          break;
+        case 2:
+          if (wallContexts[i].isPointInPath(px + halfSize, py)
+            || wallContexts[i].isPointInPath(px + halfSize, py + halfSize - 1)
+            || wallContexts[i].isPointInPath(px + halfSize, py - halfSize + 1)) {
+              direction = 0;
+          }
+          break;
+        case 3:
+          if (wallContexts[i].isPointInPath(px, py - halfSize)
+            || wallContexts[i].isPointInPath(px - halfSize + 1, py - halfSize)
+            || wallContexts[i].isPointInPath(px + halfSize - 1, py - halfSize)) {
+              direction = 0;
+          }
+          break;
+        case 4:
+          if (wallContexts[i].isPointInPath(px - halfSize, py - halfSize)
+            || wallContexts[i].isPointInPath(px - halfSize, py)
+            || wallContexts[i].isPointInPath(px - halfSize, py + halfSize)) {
+              direction = 0;
+          }
+          break;
+      }
 
+      // Substruct based on direction to return to previous position.
+      // switch(direction) {
+      //   case 1:
+      //     py = py - positionInterval;
+      //     break;
+      //   case 2:
+      //     px = px - positionInterval;
+      //     break;
+      //   case 3:
+      //     py = py + positionInterval;
+      //     break;
+      //   case 4:
+      //     px = px + positionInterval;
+      //     break;
+      // }
+    }
   }
 }
 
