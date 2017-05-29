@@ -18,7 +18,7 @@ const objectSize = 30;
 // Position interval.
 const positionInterval = 10;
 
-// Pills.
+// Pills. Array of x, y, type. type: 1 -> blue pill, 0 -> normal pill.
 let pills = [];
 
 // Pill distance.
@@ -30,10 +30,18 @@ const pillSize = 4;
 // Rendered pill.
 let canvasPill = document.createElement("canvas"),
 pillContext = canvasPill.getContext("2d");
-canvasPill.width = canvasPill.height = 5;
-pillContext.strokeStyle = 'yellow';
-pillContext.rect(0, 0, pillSize, pillSize);
+canvasPill.width = canvasPill.height = pillSize;
+pillContext.fillStyle = 'yellow';
+pillContext.fillRect(0, 0, pillSize, pillSize);
 pillContext.stroke();
+
+// Blue pill.
+let canvasBluePill = document.createElement("canvas"),
+pillBlueContext = canvasBluePill.getContext("2d");
+canvasBluePill.width = canvasBluePill.height = pillSize * 2;
+pillBlueContext.fillStyle = 'blue';
+pillBlueContext.fillRect(0, 0, pillSize * 2, pillSize * 2);
+pillBlueContext.stroke();
 
 // True if the blue pill is active.
 let bluePillIsActive = false;
@@ -57,7 +65,7 @@ const walls = [
   [[0, 0], 10, 570],
   [[0, 0], 10, 570],
   // Ghost wall.
-  [[pillDistance * 6, pillDistance * 6], 10 + pillDistance * 3, 10 + pillDistance * 3],
+  // [[pillDistance * 6, pillDistance * 6], 10 + pillDistance * 3, 10 + pillDistance],
   // Other walls.
   [[40, 0], 10, 10 + pillDistance * 7],
   [[40, pillDistance * 3], 10 + pillDistance * 5, 10],
@@ -145,7 +153,15 @@ function createPills() {
       for (var y = 23; y <= 590; y = y + pillDistance) {
 
         // Create pills everywhere at the begining.
-        var pill = [x, y];
+
+        // Randomly generate blue pill.
+        if (Math.floor((Math.random() * 100) + 1) > 90) {
+          var pill = [x - 3, y - 3, 1];
+        }
+        else {
+          var pill = [x, y, 0];
+        }
+
         pills.push(pill);
       }
     }
@@ -166,7 +182,12 @@ function createPills() {
   }
   else {
     for (var i = 0; i < pills.length; i++) {
-      canvasContext.drawImage(pillContext.canvas, pills[i][0], pills[i][1]);
+      if (pills[i][2] == 1) {
+        canvasContext.drawImage(pillBlueContext.canvas, pills[i][0], pills[i][1]);
+      }
+      else {
+        canvasContext.drawImage(pillContext.canvas, pills[i][0], pills[i][1]);
+      }
     }
   }
 }
@@ -220,6 +241,13 @@ function detectPillCollision() {
 
       // Set to -1000 to keep length and remove from viewport.
       pills[i][0] = -1000;
+
+      // If it is blue pill set chase mode on.
+      if (pills[i][2] == 1) {
+        bluePillIsActive = true;
+        setTimeout(function(){ bluePillIsActive = false; },
+          Math.floor((Math.random() * 3000) + 3000));
+      }
     }
   }
 }
