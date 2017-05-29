@@ -57,7 +57,7 @@ const walls = [
   [[0, 0], 10, 570],
   [[0, 0], 10, 570],
   // Ghost wall.
-  // [[pillDistance * 6, pillDistance * 6], 10 + pillDistance * 3, 10 + pillDistance * 3],
+  [[pillDistance * 6, pillDistance * 6], 10 + pillDistance * 3, 10 + pillDistance * 3],
   // Other walls.
   [[40, 0], 10, 10 + pillDistance * 7],
   [[40, pillDistance * 3], 10 + pillDistance * 5, 10],
@@ -144,16 +144,22 @@ function createPills() {
     for (var x = 23; x <= 590; x = x + pillDistance) {
       for (var y = 23; y <= 590; y = y + pillDistance) {
 
-        // Create pills where there are no walls.
-        for (var i = 0; i < wallContexts.length; i++) {
-          if ((x < walls[i][0][0] + walls[i][1] &&
-            x + pillSize > walls[i][0][0] &&
-            y < walls[i][0][1] + walls[i][2] &&
-            pillSize + y > walls[i][0][1]) == false) {
+        // Create pills everywhere at the begining.
+        var pill = [x, y];
+        pills.push(pill);
+      }
+    }
 
-            var pill = [x, y];
-            pills.push(pill);
-          }
+    // Remove pills based on collision with walls.
+    for (var i = 0; i < pills.length; i++) {
+      for (var w = 0; w < walls.length; w++) {
+        if (pills[i][0] < walls[w][0][0] + walls[w][1] &&
+          pills[i][0] + pillSize > walls[w][0][0] &&
+          pills[i][1] < walls[w][0][1] + walls[w][2] &&
+          pillSize + pills[i][1] > walls[w][0][1]) {
+
+          // Set to -1000 to keep length and remove from viewport.
+          pills[i][0] = -1000;
         }
       }
     }
