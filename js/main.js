@@ -42,13 +42,13 @@ function pacmanGame() {
   // Set movement based on direction.
   switch(direction) {
     case 1:
-      py = py + positionInterval;
+      py = py - positionInterval;
       break;
     case 2:
       px = px + positionInterval;
       break;
     case 3:
-      py = py - positionInterval;
+      py = py + positionInterval;
       break;
     case 4:
       px = px - positionInterval;
@@ -104,9 +104,10 @@ function detectWallCollision() {
       // Check different points based on direction.
       switch(direction) {
         case 1:
-          if (wallContexts[i].isPointInPath(px + halfSize - 1, py + halfSize)
-            || wallContexts[i].isPointInPath(px, py + halfSize)
-            || wallContexts[i].isPointInPath(px - halfSize - 1, py + halfSize)) {
+          if (wallContexts[i].isPointInPath(px, py - halfSize)
+            || wallContexts[i].isPointInPath(px - halfSize + 1, py - halfSize)
+            || wallContexts[i].isPointInPath(px + halfSize - 1, py - halfSize)) {
+
               direction = 0;
           }
           break;
@@ -118,16 +119,16 @@ function detectWallCollision() {
           }
           break;
         case 3:
-          if (wallContexts[i].isPointInPath(px, py - halfSize)
-            || wallContexts[i].isPointInPath(px - halfSize + 1, py - halfSize)
-            || wallContexts[i].isPointInPath(px + halfSize - 1, py - halfSize)) {
+          if (wallContexts[i].isPointInPath(px + halfSize - 1, py + halfSize)
+            || wallContexts[i].isPointInPath(px, py + halfSize)
+            || wallContexts[i].isPointInPath(px - halfSize + 1, py + halfSize)) {
               direction = 0;
           }
           break;
         case 4:
-          if (wallContexts[i].isPointInPath(px - halfSize, py - halfSize)
+          if (wallContexts[i].isPointInPath(px - halfSize, py - halfSize + 1)
             || wallContexts[i].isPointInPath(px - halfSize, py)
-            || wallContexts[i].isPointInPath(px - halfSize, py + halfSize)) {
+            || wallContexts[i].isPointInPath(px - halfSize, py + halfSize - 1)) {
               direction = 0;
           }
           break;
@@ -155,13 +156,13 @@ function detectWallCollision() {
 // Change direction based on keystroke.
 function keyPush(evt) {
   switch(evt.keyCode) {
-    case 40:
+    case 38:
       direction = 1;
       break;
     case 39:
       direction = 2;
       break;
-    case 38:
+    case 40:
       direction = 3;
       break;
     case 37:
