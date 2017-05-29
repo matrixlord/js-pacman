@@ -12,7 +12,6 @@ window.onload = function() {
   setInterval(pacmanGame, 1000/16.67);
 }
 
-
 // Key being pressed.
 let keyState = {};
 
@@ -347,30 +346,4 @@ function createGhosts() {
 // Set ghosts potition.
 function setGhostsPosition() {
 
-}
-
-// Change direction based on keystroke.
-function keyPush(evt) {
-  switch(evt.keyCode) {
-    case 38:
-      if (detectObjectWallCollision(px, py - 10) == false) {
-        direction = 1;
-      }
-      break;
-    case 39:
-      if (detectObjectWallCollision(px + 10, py) == false) {
-        direction = 2;
-      }
-      break;
-    case 40:
-      if (detectObjectWallCollision(px, py + 10) == false) {
-        direction = 3;
-      }
-      break;
-    case 37:
-      if (detectObjectWallCollision(px - 10, py) == false) {
-        direction = 4;
-      }
-      break;
-  }
 }
