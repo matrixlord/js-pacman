@@ -289,11 +289,10 @@ function createGhosts() {
   setGhostsPosition();
 
   // Render ghosts.
-  canvasContext.fillStyle = "blue";
-  canvasContext.fillRect(ghostsPosition[0].x, ghostsPosition[0].y, 30, 30);
-  canvasContext.fillRect(ghostsPosition[1].x, ghostsPosition[1].y, 30, 30);
-  canvasContext.fillRect(ghostsPosition[2].x, ghostsPosition[2].y, 30, 30);
-  // ghostsPosition.forEach(ghost => setGhostsPosition(ghost));
+  ghostsPosition.forEach(ghostPosition => {
+    canvasContext.fillStyle = ghostPosition.color;
+    canvasContext.fillRect(ghostPosition.x, ghostPosition.y, objectSize, objectSize);
+  });
 }
 
 // Set ghosts potition.
