@@ -94,8 +94,14 @@ const walls = [
   [[pillDistance * 5, pillDistance * 6], 10, 10 + pillDistance * 2],
 ];
 
-// Rendered walls.
-wallContexts = [];
+// Initial value to create walls only once.
+let wallsCreated = false;
+
+// Wall canvas.
+var canvasWall = document.createElement("canvas"),
+wallContext = canvasWall.getContext("2d");
+canvasWall.width = canvasWall.height = 580;
+wallContext.strokeStyle = '#0000FF';
 
 function pacmanGame() {
   // Set background.
@@ -140,11 +146,8 @@ function pacmanGame() {
 
 // Create walls.
 function createWalls() {
-  if (wallContexts.length == 0) {
+  if (wallsCreated == false) {
     for (var i = 0; i < walls.length; i++) {
-      var canvasWall = document.createElement("canvas"),
-      wallContext = canvasWall.getContext("2d");
-      canvasWall.width = canvasWall.height = 580;
 
       // Get line.
       x = walls[i][0][0];
@@ -152,17 +155,13 @@ function createWalls() {
       width = walls[i][1];
       height = walls[i][2];
 
-      wallContext.strokeStyle = '#0000FF';
       wallContext.rect(x, y, width, height);
       wallContext.stroke();
-
-      wallContexts.push(wallContext);
     }
+    wallsCreated = true;
   }
   else {
-    for (var i = 0; i < wallContexts.length; i++) {
-      canvasContext.drawImage(wallContexts[i].canvas, 0, 0);
-    }
+    canvasContext.drawImage(wallContext.canvas, 0, 0);
 
     // Create ghost gate.
     canvasContext.drawImage(ghostGateContext.canvas, ghostGate[0][0], ghostGate[0][1]);
@@ -174,8 +173,8 @@ function createPills() {
   // Initialize.
   if (pills.length == 0) {
     // Get all x,y values.
-    for (var x = 23; x <= 590; x = x + pillDistance) {
-      for (var y = 23; y <= 590; y = y + pillDistance) {
+    for (var x = 23; x <= 570; x = x + pillDistance) {
+      for (var y = 23; y <= 570; y = y + pillDistance) {
 
         // Create pills everywhere at the begining.
 
