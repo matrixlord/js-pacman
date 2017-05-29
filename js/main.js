@@ -1,9 +1,20 @@
 window.onload = function() {
   canvas = document.getElementById("pacman_canvas");
   canvasContext = canvas.getContext("2d");
-  document.addEventListener("keydown", keyPush);
+
+  window.addEventListener('keydown', function(e){
+    keyState[e.keyCode || e.which] = true;
+  }, true);
+  window.addEventListener('keyup', function(e){
+      keyState[e.keyCode || e.which] = false;
+  }, true);
+
   setInterval(pacmanGame, 1000/16.67);
 }
+
+
+// Key being pressed.
+let keyState = {};
 
 // Pacman position.
 let px = 10;
@@ -104,6 +115,29 @@ canvasWall.width = canvasWall.height = 580;
 wallContext.strokeStyle = '#0000FF';
 
 function pacmanGame() {
+
+  // Change direction based on keystate.
+  if (keyState[38]) {
+    if (detectObjectWallCollision(px, py - 10) == false) {
+      direction = 1;
+    }
+  }
+  else if (keyState[39]) {
+    if (detectObjectWallCollision(px + 10, py) == false) {
+      direction = 2;
+    }
+  }
+  else if (keyState[40]) {
+    if (detectObjectWallCollision(px, py + 10) == false) {
+      direction = 3;
+    }
+  }
+  else if (keyState[37]) {
+    if (detectObjectWallCollision(px - 10, py) == false) {
+      direction = 4;
+    }
+  }
+
   // Set background.
   canvasContext.fillStyle = "black";
   canvasContext.fillRect(0, 0, canvas.width, canvas.height);
@@ -221,24 +255,27 @@ function detectWallCollision() {
   // Get if pacman is in path.
   if (direction != 0) {
 
-    if (detectObjectWallCollision(px, py)) {
-      // Substruct based on direction to return to previous position.
-      switch(direction) {
-        case 1:
-          py = py + positionInterval;
-          break;
-        case 2:
-          px = px - positionInterval;
-          break;
-        case 3:
-          py = py - positionInterval;
-          break;
-        case 4:
-          px = px + positionInterval;
-          break;
-      }
-
-      direction = 0;
+    switch(direction) {
+      case 1:
+        if (detectObjectWallCollision(px, py - 10) == true) {
+          direction = 0;
+        }
+        break;
+      case 2:
+        if (detectObjectWallCollision(px + 10, py) == true) {
+          direction = 0;
+        }
+        break;
+      case 3:
+        if (detectObjectWallCollision(px, py + 10) == true) {
+          direction = 0;
+        }
+        break;
+      case 4:
+        if (detectObjectWallCollision(px - 10, py) == true) {
+          direction = 0;
+        }
+        break;
     }
   }
 }
@@ -316,16 +353,24 @@ function setGhostsPosition() {
 function keyPush(evt) {
   switch(evt.keyCode) {
     case 38:
-      direction = 1;
+      if (detectObjectWallCollision(px, py - 10) == false) {
+        direction = 1;
+      }
       break;
     case 39:
-      direction = 2;
+      if (detectObjectWallCollision(px + 10, py) == false) {
+        direction = 2;
+      }
       break;
     case 40:
-      direction = 3;
+      if (detectObjectWallCollision(px, py + 10) == false) {
+        direction = 3;
+      }
       break;
     case 37:
-      direction = 4;
+      if (detectObjectWallCollision(px - 10, py) == false) {
+        direction = 4;
+      }
       break;
   }
 }
