@@ -53,8 +53,17 @@ let ghostsPosition = [
   {x: 10 + pillDistance * 8, y: 10 + pillDistance * 6},
 ];
 
-// Wall that ghosts can pass through. x, y, width, height.
-const ghostGate = [];
+// Wall that ghosts can pass through. [x, y], width, height.
+let canvasGhostGate = document.createElement("canvas"),
+ghostGateContext = canvasGhostGate.getContext("2d");
+canvasGhostGate.width = 10 + pillDistance;
+canvasGhostGate.height = 2;
+ghostGateContext.fillStyle = 'yellow';
+ghostGateContext.fillRect(0, 0, 10 + pillDistance, 2);
+ghostGateContext.stroke();
+
+// Helper constant for ghosts to get out.
+const ghostGate = [[pillDistance * 7, pillDistance * 6], 10 + pillDistance, 2];
 
 // Initialize walls.
 const walls = [
@@ -65,7 +74,7 @@ const walls = [
   [[0, 0], 10, 570],
   [[0, 0], 10, 570],
   // Ghost wall.
-  // [[pillDistance * 6, pillDistance * 6], 10 + pillDistance * 3, 10 + pillDistance],
+  [[pillDistance * 6, pillDistance * 6], 10 + pillDistance * 3, 10 + pillDistance],
   // Other walls.
   [[40, 0], 10, 10 + pillDistance * 7],
   [[40, pillDistance * 3], 10 + pillDistance * 5, 10],
@@ -141,6 +150,9 @@ function createWalls() {
     for (var i = 0; i < wallContexts.length; i++) {
       canvasContext.drawImage(wallContexts[i].canvas, 0, 0);
     }
+
+    // Create ghost gate.
+    canvasContext.drawImage(ghostGateContext.canvas, ghostGate[0][0], ghostGate[0][1]);
   }
 }
 
@@ -155,7 +167,7 @@ function createPills() {
         // Create pills everywhere at the begining.
 
         // Randomly generate blue pill.
-        if (Math.floor((Math.random() * 100) + 1) > 90) {
+        if (Math.floor((Math.random() * 100) + 1) > 94) {
           var pill = [x - 3, y - 3, 1];
         }
         else {
@@ -256,6 +268,8 @@ function detectPillCollision() {
 function createGhosts() {
   // Set ghosts position.
   setGhostsPosition();
+
+  // Render ghost gate.
 
   // Render ghosts.
   canvasContext.fillStyle = "blue";
