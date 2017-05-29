@@ -6,45 +6,62 @@ window.onload = function() {
 }
 
 // Pacman position.
-px = 10;
-py = 10;
+let px = 10;
+let py = 10;
 
 // Pacman direction. 0 -> none, 1 -> up, 2 -> right, 3 -> down, 4 -> left.
-direction = 0;
+let direction = 0;
 
 // Pacman size.
-pacmanSize = 30;
+const objectSize = 30;
 
 // Position interval.
-positionInterval = 10;
+const positionInterval = 10;
 
 // Pills.
-pills = [];
+let pills = [];
 
 // Pill distance.
-pillDistance = 40;
+const pillDistance = 40;
 
 // Pill size.
-pillSize = 4;
+const pillSize = 4;
 
 // Rendered pill.
-var canvasPill = document.createElement("canvas"),
+let canvasPill = document.createElement("canvas"),
 pillContext = canvasPill.getContext("2d");
 canvasPill.width = canvasPill.height = 5;
 pillContext.strokeStyle = 'yellow';
 pillContext.rect(0, 0, pillSize, pillSize);
 pillContext.stroke();
 
+// True if the blue pill is active.
+let bluePillIsActive = false;
+
+// Ghosts position.
+let ghostsPosition = [
+  {x: 10 + pillDistance * 6, y: 10 + pillDistance * 6},
+  {x: 10 + pillDistance * 7, y: 10 + pillDistance * 6},
+  {x: 10 + pillDistance * 8, y: 10 + pillDistance * 6},
+];
+
+// Wall that ghosts can pass through. x, y, width, height.
+const ghostGate = [];
+
 // Initialize walls.
-walls = [
+const walls = [
+  // Outer walls.
   [[0, 0], 570, 10],
   [[560, 0], 10, 570],
   [[0, 560], 570, 10],
   [[0, 0], 10, 570],
   [[0, 0], 10, 570],
+  // Ghost wall.
+  // [[pillDistance * 6, pillDistance * 6], 10 + pillDistance * 3, 10 + pillDistance * 3],
+  // Other walls.
   [[40, 0], 10, 10 + pillDistance * 7],
   [[40, pillDistance * 3], 10 + pillDistance * 5, 10],
-  [[pillDistance * 8, 0], 10, 10 + pillDistance * 8],
+  [[pillDistance * 8, 0], 10, 10 + pillDistance * 5],
 ];
 
 // Rendered walls.
@@ -73,7 +90,7 @@ function pacmanGame() {
 
   // Set pacman position.
   canvasContext.fillStyle = "yellow";
-  canvasContext.fillRect(px, py, pacmanSize, pacmanSize);
+  canvasContext.fillRect(px, py, objectSize, objectSize);
 
   // Create walls.
   createWalls();
@@ -86,6 +103,9 @@ function pacmanGame() {
 
   // Detect pill collision.
   detectPillCollision();
+
+  // Create ghosts.
+  createGhosts();
 }
 
 // Create walls.
@@ -157,9 +177,9 @@ function detectWallCollision() {
       // rect1.y < rect2.y + rect2.h &&
       // rect1.h + rect1.y > rect2.y
       if (px < walls[i][0][0] + walls[i][1] &&
-         px + pacmanSize > walls[i][0][0] &&
+         px + objectSize > walls[i][0][0] &&
          py < walls[i][0][1] + walls[i][2] &&
-         pacmanSize + py > walls[i][0][1]) {
+         objectSize + py > walls[i][0][1]) {
 
            // Substruct based on direction to return to previous position.
            switch(direction) {
@@ -188,14 +208,31 @@ function detectPillCollision() {
 
   for (var i = 0; i < pills.length; i++) {
     if (px < pills[i][0] + pillSize &&
-      px + pacmanSize > pills[i][0] &&
+      px + objectSize > pills[i][0] &&
       py < pills[i][1] + pillSize &&
-      pacmanSize + py > pills[i][1]) {
+      objectSize + py > pills[i][1]) {
 
       // Set to -1000 to keep length and remove from viewport.
       pills[i][0] = -1000;
     }
   }
+}
+
+// Create ghosts.
+function createGhosts() {
+  // Set ghosts position.
+  setGhostsPosition();
+
+  // Render ghosts.
+  canvasContext.fillStyle = "blue";
+  canvasContext.fillRect(ghostsPosition[0].x, ghostsPosition[0].y, 30, 30);
+  canvasContext.fillRect(ghostsPosition[1].x, ghostsPosition[1].y, 30, 30);
+  canvasContext.fillRect(ghostsPosition[2].x, ghostsPosition[2].y, 30, 30);
+}
+
+// Set ghosts potition.
+function setGhostsPosition() {
+
 }
 
 // Change direction based on keystroke.
