@@ -6,15 +6,14 @@ window.onload = function() {
 }
 
 // Pacman position.
-px = 25;
-py = 25;
+px = 10;
+py = 10;
 
 // Pacman direction. 0 -> none, 1 -> up, 2 -> right, 3 -> down, 4 -> left.
 direction = 0;
 
 // Pacman size.
 pacmanSize = 30;
-halfSize = 15;
 
 // Position interval.
 positionInterval = 10;
@@ -33,6 +32,15 @@ walls = [
 
 // Rendered walls.
 wallContexts = [];
+
+// Pills.
+pills = [];
+
+// Pill distance.
+pillDistance = 40;
+
+// Rendered pills.
+pillContexts = [];
 
 function pacmanGame() {
   // Set background.
@@ -57,10 +65,13 @@ function pacmanGame() {
 
   // Set pacman position.
   canvasContext.fillStyle = "yellow";
-  canvasContext.fillRect(px - halfSize, py - halfSize, pacmanSize, pacmanSize);
+  canvasContext.fillRect(px, py, pacmanSize, pacmanSize);
 
   // Create walls.
   createWalls();
+
+  // Create pills.
+  // createPills();
 
   // Detect wall collision.
   detectWallCollision();
@@ -92,7 +103,42 @@ function createWalls() {
       canvasContext.drawImage(wallContexts[i].canvas, 0, 0);
     }
   }
+}
 
+// Create pills.
+function createPills() {
+  if (pillContexts.length == 0) {
+    // Get all x,y values.
+    for (var x = 25; x <= 590; x = x + pillDistance) {
+      for (var y = 25; y <= 590; y = y + pillDistance) {
+
+        // Create pills where there are no walls.
+        for (var i = 0; i < wallContexts.length; i++) {
+          if ((px < walls[i][0][0] + walls[i][1] &&
+             px + pacmanSize > walls[i][0][0] &&
+             py < walls[i][0][1] + walls[i][2] &&
+             pacmanSize + py > walls[i][0][1]) == false) {
+
+            // Create pill.
+            var canvasPill = document.createElement("canvas"),
+            pillContext = canvasPill.getContext("2d");
+            canvasPill.width = canvasPill.height = 5;
+
+            pillContext.strokeStyle = 'yellow';
+            pillContext.rect(x, y, 5, 5);
+            pillContext.stroke();
+
+            pillContexts.push(pillContext);
+          }
+        }
+      }
+    }
+  }
+  else {
+    for (var i = 0; i < pillContexts.length; i++) {
+      canvasContext.drawImage(pillContexts[i].canvas, 50, 50);
+    }
+  }
 }
 
 // Detect wall collision and stop pacman.
@@ -101,54 +147,34 @@ function detectWallCollision() {
     // Get if pacman is in path.
     if (direction != 0) {
 
-      // Check different points based on direction.
-      switch(direction) {
-        case 1:
-          if (wallContexts[i].isPointInPath(px, py - halfSize)
-            || wallContexts[i].isPointInPath(px - halfSize + 1, py - halfSize)
-            || wallContexts[i].isPointInPath(px + halfSize - 1, py - halfSize)) {
+      // Collision detection.
+      // rect1.x < rect2.x + rect2.w &&
+      // rect1.x + rect1.w > rect2.x &&
+      // rect1.y < rect2.y + rect2.h &&
+      // rect1.h + rect1.y > rect2.y
+      if (px < walls[i][0][0] + walls[i][1] &&
+         px + pacmanSize > walls[i][0][0] &&
+         py < walls[i][0][1] + walls[i][2] &&
+         pacmanSize + py > walls[i][0][1]) {
 
-              direction = 0;
-          }
-          break;
-        case 2:
-          if (wallContexts[i].isPointInPath(px + halfSize, py)
-            || wallContexts[i].isPointInPath(px + halfSize, py + halfSize - 1)
-            || wallContexts[i].isPointInPath(px + halfSize, py - halfSize + 1)) {
-              direction = 0;
-          }
-          break;
-        case 3:
-          if (wallContexts[i].isPointInPath(px + halfSize - 1, py + halfSize)
-            || wallContexts[i].isPointInPath(px, py + halfSize)
-            || wallContexts[i].isPointInPath(px - halfSize + 1, py + halfSize)) {
-              direction = 0;
-          }
-          break;
-        case 4:
-          if (wallContexts[i].isPointInPath(px - halfSize, py - halfSize + 1)
-            || wallContexts[i].isPointInPath(px - halfSize, py)
-            || wallContexts[i].isPointInPath(px - halfSize, py + halfSize - 1)) {
-              direction = 0;
-          }
-          break;
+           // Substruct based on direction to return to previous position.
+           switch(direction) {
+             case 1:
+               py = py + positionInterval;
+               break;
+             case 2:
+               px = px - positionInterval;
+               break;
+             case 3:
+               py = py - positionInterval;
+               break;
+             case 4:
+               px = px + positionInterval;
+               break;
+           }
+
+           direction = 0;
       }
-
-      // Substruct based on direction to return to previous position.
-      // switch(direction) {
-      //   case 1:
-      //     py = py - positionInterval;
-      //     break;
-      //   case 2:
-      //     px = px - positionInterval;
-      //     break;
-      //   case 3:
-      //     py = py + positionInterval;
-      //     break;
-      //   case 4:
-      //     px = px + positionInterval;
-      //     break;
-      // }
     }
   }
 }
