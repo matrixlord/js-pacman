@@ -76,9 +76,22 @@ const walls = [
   // Ghost wall.
   [[pillDistance * 6, pillDistance * 6], 10 + pillDistance * 3, 10 + pillDistance],
   // Other walls.
-  [[40, 0], 10, 10 + pillDistance * 7],
-  [[40, pillDistance * 3], 10 + pillDistance * 5, 10],
+  // Upper-left.
+  [[pillDistance, 0], 10, 10 + pillDistance * 7],
+  [[pillDistance * 2, pillDistance], 10 + pillDistance * 5, 10],
+  [[pillDistance, pillDistance * 2], 10 + pillDistance * 3, 10],
+  [[pillDistance * 5, pillDistance * 2], 10 + pillDistance * 3, 10],
+  [[pillDistance * 2, pillDistance * 3], 10 + pillDistance * 5, 10],
+  [[pillDistance * 2, pillDistance * 4], 10, 10 + pillDistance * 5],
+  [[pillDistance * 3, pillDistance * 4], 10, 10 + pillDistance * 3],
   [[pillDistance * 8, 0], 10, 10 + pillDistance * 5],
+  [[pillDistance * 4, pillDistance * 4], 10 + pillDistance * 3, 10],
+  [[pillDistance * 5, pillDistance * 5], 10 + pillDistance * 3, 10],
+  [[pillDistance * 4, pillDistance * 5], 10, 10 + pillDistance * 2],
+  [[pillDistance * 4, pillDistance * 8], 10, 10 + pillDistance],
+  [[pillDistance * 3, pillDistance * 8], 10, 10 + pillDistance],
+  [[pillDistance * 3, pillDistance * 9], 10 + pillDistance * 3, 10],
+  [[pillDistance * 5, pillDistance * 6], 10, 10 + pillDistance * 2],
 ];
 
 // Rendered walls.
