@@ -46,11 +46,11 @@ pillBlueContext.stroke();
 // True if the blue pill is active.
 let bluePillIsActive = false;
 
-// Ghosts position.
+// Ghosts position. x, y, direction, color.
 let ghostsPosition = [
-  {x: 10 + pillDistance * 6, y: 10 + pillDistance * 6},
-  {x: 10 + pillDistance * 7, y: 10 + pillDistance * 6},
-  {x: 10 + pillDistance * 8, y: 10 + pillDistance * 6},
+  {x: 10 + pillDistance * 6, y: 10 + pillDistance * 6, direction: 0, color: "blue"},
+  {x: 10 + pillDistance * 7, y: 10 + pillDistance * 6, direction: 0, color: "red"},
+  {x: 10 + pillDistance * 8, y: 10 + pillDistance * 6, direction: 0, color: "pink"},
 ];
 
 // Wall that ghosts can pass through. [x, y], width, height.
@@ -206,40 +206,59 @@ function createPills() {
 
 // Detect wall collision and stop pacman.
 function detectWallCollision() {
-  for (var i = 0; i < wallContexts.length; i++) {
-    // Get if pacman is in path.
-    if (direction != 0) {
+  // Get if pacman is in path.
+  if (direction != 0) {
 
-      // Collision detection.
-      // rect1.x < rect2.x + rect2.w &&
-      // rect1.x + rect1.w > rect2.x &&
-      // rect1.y < rect2.y + rect2.h &&
-      // rect1.h + rect1.y > rect2.y
-      if (px < walls[i][0][0] + walls[i][1] &&
-         px + objectSize > walls[i][0][0] &&
-         py < walls[i][0][1] + walls[i][2] &&
-         objectSize + py > walls[i][0][1]) {
-
-           // Substruct based on direction to return to previous position.
-           switch(direction) {
-             case 1:
-               py = py + positionInterval;
-               break;
-             case 2:
-               px = px - positionInterval;
-               break;
-             case 3:
-               py = py - positionInterval;
-               break;
-             case 4:
-               px = px + positionInterval;
-               break;
-           }
-
-           direction = 0;
+    if (detectObjectWallCollision(px, py)) {
+      // Substruct based on direction to return to previous position.
+      switch(direction) {
+        case 1:
+          py = py + positionInterval;
+          break;
+        case 2:
+          px = px - positionInterval;
+          break;
+        case 3:
+          py = py - positionInterval;
+          break;
+        case 4:
+          px = px + positionInterval;
+          break;
       }
+
+      direction = 0;
     }
   }
+}
+/**
+ * Detect object collision with walls.
+ *
+ * @param integer x
+ *   x position.
+ * @param integer y
+ *   y position.
+ *
+ * @returns boolean
+ *   True if there is collision.
+ */
+function detectObjectWallCollision(x, y) {
+
+  for (var i = 0; i < walls.length; i++) {
+    // Collision detection.
+    // rect1.x < rect2.x + rect2.w &&
+    // rect1.x + rect1.w > rect2.x &&
+    // rect1.y < rect2.y + rect2.h &&
+    // rect1.h + rect1.y > rect2.y
+    if (x < walls[i][0][0] + walls[i][1] &&
+       x + objectSize > walls[i][0][0] &&
+       y < walls[i][0][1] + walls[i][2] &&
+       objectSize + y > walls[i][0][1]) {
+
+       return true;
+    }
+  }
+
+  return false;
 }
 
 // Detect pill collision.
@@ -269,13 +288,12 @@ function createGhosts() {
   // Set ghosts position.
   setGhostsPosition();
 
-  // Render ghost gate.
-
   // Render ghosts.
   canvasContext.fillStyle = "blue";
   canvasContext.fillRect(ghostsPosition[0].x, ghostsPosition[0].y, 30, 30);
   canvasContext.fillRect(ghostsPosition[1].x, ghostsPosition[1].y, 30, 30);
   canvasContext.fillRect(ghostsPosition[2].x, ghostsPosition[2].y, 30, 30);
+  // ghostsPosition.forEach(ghost => setGhostsPosition(ghost));
 }
 
 // Set ghosts potition.
