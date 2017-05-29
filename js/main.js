@@ -18,29 +18,37 @@ pacmanSize = 30;
 // Position interval.
 positionInterval = 10;
 
-// Initialize walls.
-walls = [
-  [[0, 0], 600, 10],
-  [[590, 0], 10, 600],
-  [[0, 590], 600, 10],
-  [[0, 0], 10, 600],
-  [[0, 0], 10, 600],
-  [[40, 0], 10, 300],
-  [[40, 330], 300, 10],
-  [[300, 0], 10, 300],
-];
-
-// Rendered walls.
-wallContexts = [];
-
 // Pills.
 pills = [];
 
 // Pill distance.
 pillDistance = 40;
 
-// Rendered pills.
-pillContexts = [];
+// Pill size.
+pillSize = 4;
+
+// Rendered pill.
+var canvasPill = document.createElement("canvas"),
+pillContext = canvasPill.getContext("2d");
+canvasPill.width = canvasPill.height = 5;
+pillContext.strokeStyle = 'yellow';
+pillContext.rect(0, 0, pillSize, pillSize);
+pillContext.stroke();
+
+// Initialize walls.
+walls = [
+  [[0, 0], 570, 10],
+  [[560, 0], 10, 570],
+  [[0, 560], 570, 10],
+  [[0, 0], 10, 570],
+  [[0, 0], 10, 570],
+  [[40, 0], 10, 10 + pillDistance * 7],
+  [[40, pillDistance * 3], 10 + pillDistance * 5, 10],
+  [[pillDistance * 8, 0], 10, 10 + pillDistance * 8],
+];
+
+// Rendered walls.
+wallContexts = [];
 
 function pacmanGame() {
   // Set background.
@@ -71,10 +79,13 @@ function pacmanGame() {
   createWalls();
 
   // Create pills.
-  // createPills();
+  createPills();
 
   // Detect wall collision.
   detectWallCollision();
+
+  // Detect pill collision.
+  detectPillCollision();
 }
 
 // Create walls.
@@ -83,7 +94,7 @@ function createWalls() {
     for (var i = 0; i < walls.length; i++) {
       var canvasWall = document.createElement("canvas"),
       wallContext = canvasWall.getContext("2d");
-      canvasWall.width = canvasWall.height = 600;
+      canvasWall.width = canvasWall.height = 580;
 
       // Get line.
       x = walls[i][0][0];
@@ -107,36 +118,29 @@ function createWalls() {
 
 // Create pills.
 function createPills() {
-  if (pillContexts.length == 0) {
+  // Initialize.
+  if (pills.length == 0) {
     // Get all x,y values.
-    for (var x = 25; x <= 590; x = x + pillDistance) {
-      for (var y = 25; y <= 590; y = y + pillDistance) {
+    for (var x = 23; x <= 590; x = x + pillDistance) {
+      for (var y = 23; y <= 590; y = y + pillDistance) {
 
         // Create pills where there are no walls.
         for (var i = 0; i < wallContexts.length; i++) {
-          if ((px < walls[i][0][0] + walls[i][1] &&
-             px + pacmanSize > walls[i][0][0] &&
-             py < walls[i][0][1] + walls[i][2] &&
-             pacmanSize + py > walls[i][0][1]) == false) {
+          if ((x < walls[i][0][0] + walls[i][1] &&
+            x + pillSize > walls[i][0][0] &&
+            y < walls[i][0][1] + walls[i][2] &&
+            pillSize + y > walls[i][0][1]) == false) {
 
-            // Create pill.
-            var canvasPill = document.createElement("canvas"),
-            pillContext = canvasPill.getContext("2d");
-            canvasPill.width = canvasPill.height = 5;
-
-            pillContext.strokeStyle = 'yellow';
-            pillContext.rect(x, y, 5, 5);
-            pillContext.stroke();
-
-            pillContexts.push(pillContext);
+            var pill = [x, y];
+            pills.push(pill);
           }
         }
       }
     }
   }
   else {
-    for (var i = 0; i < pillContexts.length; i++) {
-      canvasContext.drawImage(pillContexts[i].canvas, 50, 50);
+    for (var i = 0; i < pills.length; i++) {
+      canvasContext.drawImage(pillContext.canvas, pills[i][0], pills[i][1]);
     }
   }
 }
@@ -175,6 +179,21 @@ function detectWallCollision() {
 
            direction = 0;
       }
+    }
+  }
+}
+
+// Detect pill collision.
+function detectPillCollision() {
+
+  for (var i = 0; i < pills.length; i++) {
+    if (px < pills[i][0] + pillSize &&
+      px + pacmanSize > pills[i][0] &&
+      py < pills[i][1] + pillSize &&
+      pacmanSize + py > pills[i][1]) {
+
+      // Set to -1000 to keep length and remove from viewport.
+      pills[i][0] = -1000;
     }
   }
 }
