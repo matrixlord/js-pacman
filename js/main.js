@@ -58,7 +58,7 @@ let bluePillIsActive = false;
 
 // Ghosts position. x, y, direction, color.
 let ghostsPosition = [
-  {x: 10 + pillDistance * 6, y: 10 + pillDistance * 6, direction: 0, color: "blue"},
+  {x: 10 + pillDistance * 6, y: 10 + pillDistance * 6, direction: 0, color: "green"},
   {x: 10 + pillDistance * 7, y: 10 + pillDistance * 6, direction: 0, color: "red"},
   {x: 10 + pillDistance * 8, y: 10 + pillDistance * 6, direction: 0, color: "pink"},
 ];
@@ -193,7 +193,8 @@ function createWalls() {
       width = walls[i][1];
       height = walls[i][2];
 
-      wallContext.rect(x, y, width, height);
+      wallContext.fillStyle = "blue";
+      wallContext.fillRect(x, y, width, height);
       wallContext.stroke();
     }
     wallsCreated = true;
