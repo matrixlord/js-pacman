@@ -1,11 +1,11 @@
 /**
 @todo,
-- Ghost collision (blue pill collision)
+- Ghost collision (blue pill collision) -> done
 - Ghost AI
-- Ghost respawn
-- Win criteria
+- Ghost respawn -> done
+- Win criteria -> done
 */
-;
+let gameLoop;
 window.onload = function() {
   canvas = document.getElementById("pacman_canvas");
   canvasContext = canvas.getContext("2d");
@@ -17,7 +17,7 @@ window.onload = function() {
       keyState[e.keyCode || e.which] = false;
   }, true);
 
-  setInterval(pacmanGame, 1000/16.67);
+  gameLoop = setInterval(pacmanGame, 1000/16.67);
 }
 
 // Key being pressed.
@@ -38,6 +38,9 @@ const positionInterval = 10;
 
 // Pills. Array of x, y, type. type: 1 -> blue pill, 0 -> normal pill.
 let pills = [];
+
+// Helper variable for win condition.
+let pillCount = 0;
 
 // Pill distance.
 const pillDistance = 40;
@@ -65,10 +68,10 @@ pillBlueContext.stroke();
 let bluePillIsActive = false;
 
 // Ghosts position. x, y, direction, color.
-let ghostsPosition = [
-  {x: 10 + pillDistance * 6, y: 10 + pillDistance * 6, direction: 0, color: "green"},
-  {x: 10 + pillDistance * 7, y: 10 + pillDistance * 6, direction: 0, color: "red"},
-  {x: 10 + pillDistance * 8, y: 10 + pillDistance * 6, direction: 0, color: "pink"},
+let ghosts = [
+  {x: 10 + pillDistance * 6, y: 10 + pillDistance * 6, direction: 0, color: "green", active: true},
+  {x: 10 + pillDistance * 7, y: 10 + pillDistance * 6, direction: 0, color: "red", active: true},
+  {x: 10 + pillDistance * 8, y: 10 + pillDistance * 6, direction: 0, color: "pink", active: true},
 ];
 
 // Initialize walls.
@@ -110,6 +113,9 @@ function pacmanGame() {
 
   // Create ghosts.
   createGhosts();
+
+  // Detect ghost collision with pacman.
+  detectGhostPacmanCollision();
 }
 
 function setDirection() {
@@ -295,30 +301,73 @@ function detectPillCollision() {
 
       // Set to -1000 to keep length and remove from viewport.
       pills[i][0] = -1000;
+      pillCount++;
 
       // If it is blue pill set chase mode on.
       if (pills[i][2] == 1) {
         bluePillIsActive = true;
         setTimeout(function(){ bluePillIsActive = false; },
-          Math.floor((Math.random() * 3000) + 3000));
+          Math.floor((Math.random() * 4000) + 3000));
       }
     }
+  }
+
+  // Check win criteria.
+  allPillsAreGone = true;
+  for (var i = 0; i < pills.length; i++) {
+    if (pills[i][0] != -1000) {
+      allPillsAreGone = false;
+      break;
+    }
+  }
+  if (allPillsAreGone) {
+    canvasContext.font = "50px Arial";
+    canvasContext.fillStyle = "red";
+    canvasContext.fillText("You are awesome!", 65, 270);
+    clearInterval(gameLoop);
   }
 }
 
 // Create ghosts.
 function createGhosts() {
   // Set ghosts position.
-  setGhostsPosition();
+  setGhosts();
 
   // Render ghosts.
-  ghostsPosition.forEach(ghostPosition => {
-    canvasContext.fillStyle = bluePillIsActive ? "cyan" : ghostPosition.color;
-    canvasContext.fillRect(ghostPosition.x, ghostPosition.y, objectSize, objectSize);
+  ghosts.forEach(ghost => {
+    if (ghost.active) {
+      canvasContext.fillStyle = bluePillIsActive ? "cyan" : ghost.color;
+      canvasContext.fillRect(ghost.x, ghost.y, objectSize, objectSize);
+    }
+  });
+}
+
+// Detect ghosts collision with Pacman.
+function detectGhostPacmanCollision() {
+  // If ghosts are not blue, the game is lost and it resets, if ghosts are blue,
+  // the ghost is set inactive for some seconds.
+  ghosts.forEach(ghost => {
+    if (px < ghost.x + objectSize &&
+      px + objectSize > ghost.x &&
+      py < ghost.y + objectSize &&
+      objectSize + py > ghost.y) {
+
+      if (bluePillIsActive) {
+        // Disable ghost.
+        ghost.active = false;
+        setTimeout(function() { ghost.active = true; }, 6000);
+      }
+      else {
+        canvasContext.font = "100px Arial";
+        canvasContext.fillStyle = "red";
+        canvasContext.fillText("You suck!", 70, 270);
+        clearInterval(gameLoop);
+      }
+    }
   });
 }
 
 // Set ghosts potition.
-function setGhostsPosition() {
+function setGhosts() {
 
 }
