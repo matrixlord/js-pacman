@@ -49,7 +49,7 @@ pillContext.stroke();
 let canvasBluePill = document.createElement("canvas"),
 pillBlueContext = canvasBluePill.getContext("2d");
 canvasBluePill.width = canvasBluePill.height = pillSize * 2;
-pillBlueContext.fillStyle = 'blue';
+pillBlueContext.fillStyle = 'yellow';
 pillBlueContext.fillRect(0, 0, pillSize * 2, pillSize * 2);
 pillBlueContext.stroke();
 
@@ -87,14 +87,17 @@ const walls = [
   [[pillDistance * 6, pillDistance * 6], 10 + pillDistance * 3, 10 + pillDistance],
   // Other walls.
   // Upper-left.
-  [[pillDistance, 0], 10, 10 + pillDistance * 7],
+  [[pillDistance, 0], 10, 10 + pillDistance * 4],
+  [[pillDistance, pillDistance * 5], 10, 10 + pillDistance * 3],
   [[pillDistance * 2, pillDistance], 10 + pillDistance * 5, 10],
   [[pillDistance, pillDistance * 2], 10 + pillDistance * 3, 10],
   [[pillDistance * 5, pillDistance * 2], 10 + pillDistance * 3, 10],
   [[pillDistance * 2, pillDistance * 3], 10 + pillDistance * 5, 10],
   [[pillDistance * 2, pillDistance * 4], 10, 10 + pillDistance * 5],
   [[pillDistance * 3, pillDistance * 4], 10, 10 + pillDistance * 3],
-  [[pillDistance * 8, 0], 10, 10 + pillDistance * 5],
+  [[pillDistance * 8, 0], 10, 10 + pillDistance * 2],
+  [[pillDistance * 8, 0], 10 + pillDistance * 3, 10],
+  [[pillDistance * 8, pillDistance * 3], 10, 10 + pillDistance * 2],
   [[pillDistance * 4, pillDistance * 4], 10 + pillDistance * 3, 10],
   [[pillDistance * 5, pillDistance * 5], 10 + pillDistance * 3, 10],
   [[pillDistance * 4, pillDistance * 5], 10, 10 + pillDistance * 2],
@@ -102,6 +105,27 @@ const walls = [
   [[pillDistance * 3, pillDistance * 8], 10, 10 + pillDistance],
   [[pillDistance * 3, pillDistance * 9], 10 + pillDistance * 3, 10],
   [[pillDistance * 5, pillDistance * 6], 10, 10 + pillDistance * 2],
+  [[pillDistance * 6, pillDistance * 8], 10 + pillDistance * 2, 10],
+  // Upper-right.
+  [[pillDistance * 9, 0], 10, 10 + pillDistance * 2],
+  [[pillDistance * 9, pillDistance * 3], 10, 10 + pillDistance * 2],
+  [[pillDistance * 10, pillDistance], 10, 10 + pillDistance],
+  [[pillDistance * 10, pillDistance * 3], 10, 10 + pillDistance],
+  [[pillDistance * 10, pillDistance * 5], 10, 10 + pillDistance],
+  [[pillDistance * 11, pillDistance], 10 + pillDistance * 2, 10],
+  [[pillDistance * 11, pillDistance * 2], 10 + pillDistance * 2, 10],
+  [[pillDistance * 10, pillDistance * 3], 10 + pillDistance * 2, 10],
+  [[pillDistance * 13, pillDistance * 3], 10 + pillDistance, 10],
+  [[pillDistance * 10, pillDistance * 4], 10 + pillDistance, 10],
+  [[pillDistance * 12, pillDistance * 4], 10 + pillDistance, 10],
+  [[pillDistance * 12, pillDistance * 5], 10 + pillDistance, 10],
+  [[pillDistance * 11, pillDistance * 6], 10 + pillDistance * 2, 10],
+  [[pillDistance * 10, pillDistance * 5], 10 + pillDistance, 10],
+  [[pillDistance * 10, pillDistance * 7], 10 + pillDistance, 10],
+  [[pillDistance * 12, pillDistance * 7], 10 + pillDistance, 10],
+  [[pillDistance * 9, pillDistance * 8], 10 + pillDistance * 5, 10],
+  // Lower left.
+  
 ];
 
 // Initial value to create walls only once.
