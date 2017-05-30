@@ -1,3 +1,11 @@
+/**
+@todo,
+- Ghost collision (blue pill collision)
+- Ghost AI
+- Ghost respawn
+- Win criteria
+*/
+
 window.onload = function() {
   canvas = document.getElementById("pacman_canvas");
   canvasContext = canvas.getContext("2d");
@@ -63,18 +71,6 @@ let ghostsPosition = [
   {x: 10 + pillDistance * 8, y: 10 + pillDistance * 6, direction: 0, color: "pink"},
 ];
 
-// Wall that ghosts can pass through. [x, y], width, height.
-let canvasGhostGate = document.createElement("canvas"),
-ghostGateContext = canvasGhostGate.getContext("2d");
-canvasGhostGate.width = 10 + pillDistance;
-canvasGhostGate.height = 2;
-ghostGateContext.fillStyle = 'yellow';
-ghostGateContext.fillRect(0, 0, 10 + pillDistance, 2);
-ghostGateContext.stroke();
-
-// Helper constant for ghosts to get out.
-const ghostGate = [[pillDistance * 7, pillDistance * 6], 10 + pillDistance, 2];
-
 // Initialize walls.
 const walls = [
   // Outer walls.
@@ -84,16 +80,21 @@ const walls = [
   [[0, 0], 10, 570],
   [[0, 0], 10, 570],
   // Ghost wall.
-  [[pillDistance * 6, pillDistance * 6], 10 + pillDistance * 3, 10 + pillDistance],
+  [[pillDistance * 6, pillDistance * 6], 10 + pillDistance, 10],
+  [[pillDistance * 8, pillDistance * 6], 10 + pillDistance, 10],
+  [[pillDistance * 6, pillDistance * 7], 10 + pillDistance * 3, 10],
   // Other walls.
   // Upper-left.
   [[pillDistance, 0], 10, 10 + pillDistance * 4],
   [[pillDistance, pillDistance * 5], 10, 10 + pillDistance * 3],
-  [[pillDistance * 2, pillDistance], 10 + pillDistance * 5, 10],
+  [[pillDistance * 2, pillDistance], 10 + pillDistance * 1, 10],
+  [[pillDistance * 4, pillDistance], 10 + pillDistance * 3, 10],
   [[pillDistance, pillDistance * 2], 10 + pillDistance * 3, 10],
   [[pillDistance * 5, pillDistance * 2], 10 + pillDistance * 3, 10],
-  [[pillDistance * 2, pillDistance * 3], 10 + pillDistance * 5, 10],
-  [[pillDistance * 2, pillDistance * 4], 10, 10 + pillDistance * 5],
+  [[pillDistance * 2, pillDistance * 3], 10 + pillDistance * 3, 10],
+  [[pillDistance * 6, pillDistance * 3], 10 + pillDistance * 1, 10],
+  [[pillDistance * 2, pillDistance * 4], 10, 10 + pillDistance * 2],
+  [[pillDistance * 2, pillDistance * 7], 10, 10 + pillDistance * 2],
   [[pillDistance * 3, pillDistance * 4], 10, 10 + pillDistance * 3],
   [[pillDistance * 8, 0], 10, 10 + pillDistance * 2],
   [[pillDistance * 8, 0], 10 + pillDistance * 3, 10],
@@ -125,7 +126,28 @@ const walls = [
   [[pillDistance * 12, pillDistance * 7], 10 + pillDistance, 10],
   [[pillDistance * 9, pillDistance * 8], 10 + pillDistance * 5, 10],
   // Lower left.
-  
+  [[pillDistance * 1, pillDistance * 9], 10, 10 + pillDistance * 3],
+  [[pillDistance * 1, pillDistance * 13], 10, 10 + pillDistance],
+  [[pillDistance * 1, pillDistance * 10], 10 + pillDistance * 3, 10],
+  [[pillDistance * 2, pillDistance * 11], 10 + pillDistance * 2, 10],
+  [[pillDistance * 2, pillDistance * 12], 10 + pillDistance * 2, 10],
+  [[pillDistance * 2, pillDistance * 13], 10 + pillDistance * 3, 10],
+  [[pillDistance * 5, pillDistance * 10], 10, 10 + pillDistance * 3],
+  [[pillDistance * 6, pillDistance * 10], 10, 10 + pillDistance * 2],
+  [[pillDistance * 7, pillDistance * 9], 10 + pillDistance * 2, 10],
+  [[pillDistance * 7, pillDistance * 10], 10 + pillDistance * 2, 10],
+  [[pillDistance * 7, pillDistance * 11], 10 + pillDistance * 2, 10],
+  [[pillDistance * 7, pillDistance * 12], 10 + pillDistance * 2, 10],
+  [[pillDistance * 6, pillDistance * 13], 10 + pillDistance * 2, 10],
+  // Lower right.
+  [[pillDistance * 10, pillDistance * 9], 10, 10 + pillDistance * 3],
+  [[pillDistance * 9, pillDistance * 13], 10 + pillDistance, 10],
+  [[pillDistance * 11, pillDistance * 9], 10, 10 + pillDistance * 2],
+  [[pillDistance * 11, pillDistance * 12], 10, 10 + pillDistance * 2],
+  [[pillDistance * 12, pillDistance * 9], 10 + pillDistance, 10],
+  [[pillDistance * 12, pillDistance * 10], 10 + pillDistance, 10],
+  [[pillDistance * 12, pillDistance * 11], 10 + pillDistance, 10 + pillDistance],
+  [[pillDistance * 12, pillDistance * 13], 10 + pillDistance, 10],
 ];
 
 // Initial value to create walls only once.
@@ -227,9 +249,6 @@ function createWalls() {
   }
   else {
     canvasContext.drawImage(wallContext.canvas, 0, 0);
-
-    // Create ghost gate.
-    canvasContext.drawImage(ghostGateContext.canvas, ghostGate[0][0], ghostGate[0][1]);
   }
 }
 
@@ -370,7 +389,7 @@ function createGhosts() {
 
   // Render ghosts.
   ghostsPosition.forEach(ghostPosition => {
-    canvasContext.fillStyle = ghostPosition.color;
+    canvasContext.fillStyle = bluePillIsActive ? "cyan" : ghostPosition.color;
     canvasContext.fillRect(ghostPosition.x, ghostPosition.y, objectSize, objectSize);
   });
 }
