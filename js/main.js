@@ -165,20 +165,22 @@ function setDirection() {
     }
   }
 
-  // Set movement based on direction.
-  switch(direction) {
-    case 1:
-      py = py - positionInterval;
-      break;
-    case 2:
-      px = px + positionInterval;
-      break;
-    case 3:
-      py = py + positionInterval;
-      break;
-    case 4:
-      px = px - positionInterval;
-      break;
+  if (direction != 0) {
+    // Set movement based on direction.
+    switch(direction) {
+      case 1:
+        py = py - positionInterval;
+        break;
+      case 2:
+        px = px + positionInterval;
+        break;
+      case 3:
+        py = py + positionInterval;
+        break;
+      case 4:
+        px = px - positionInterval;
+        break;
+    }
   }
 }
 
