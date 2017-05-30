@@ -115,47 +115,12 @@ wallContext.strokeStyle = '#0000FF';
 
 function pacmanGame() {
 
-  // Change direction based on keystate.
-  if (keyState[38]) {
-    if (detectObjectWallCollision(px, py - 10) == false) {
-      direction = 1;
-    }
-  }
-  else if (keyState[39]) {
-    if (detectObjectWallCollision(px + 10, py) == false) {
-      direction = 2;
-    }
-  }
-  else if (keyState[40]) {
-    if (detectObjectWallCollision(px, py + 10) == false) {
-      direction = 3;
-    }
-  }
-  else if (keyState[37]) {
-    if (detectObjectWallCollision(px - 10, py) == false) {
-      direction = 4;
-    }
-  }
+  // Get key and change direction.
+  setDirection();
 
   // Set background.
   canvasContext.fillStyle = "black";
   canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Set movement based on direction.
-  switch(direction) {
-    case 1:
-      py = py - positionInterval;
-      break;
-    case 2:
-      px = px + positionInterval;
-      break;
-    case 3:
-      py = py + positionInterval;
-      break;
-    case 4:
-      px = px - positionInterval;
-      break;
-  }
 
   // Set pacman position.
   canvasContext.fillStyle = "yellow";
@@ -175,6 +140,46 @@ function pacmanGame() {
 
   // Create ghosts.
   createGhosts();
+}
+
+function setDirection() {
+  // Change direction based on keystate.
+  if (keyState[38]) {
+    if (detectObjectWallCollision(px, py - positionInterval) == false) {
+      direction = 1;
+    }
+  }
+  else if (keyState[39]) {
+    if (detectObjectWallCollision(px + positionInterval, py) == false) {
+      direction = 2;
+    }
+  }
+  else if (keyState[40]) {
+    if (detectObjectWallCollision(px, py + positionInterval) == false) {
+      direction = 3;
+    }
+  }
+  else if (keyState[37]) {
+    if (detectObjectWallCollision(px - positionInterval, py) == false) {
+      direction = 4;
+    }
+  }
+
+  // Set movement based on direction.
+  switch(direction) {
+    case 1:
+      py = py - positionInterval;
+      break;
+    case 2:
+      px = px + positionInterval;
+      break;
+    case 3:
+      py = py + positionInterval;
+      break;
+    case 4:
+      px = px - positionInterval;
+      break;
+  }
 }
 
 // Create walls.
@@ -256,22 +261,22 @@ function detectWallCollision() {
 
     switch(direction) {
       case 1:
-        if (detectObjectWallCollision(px, py - 10) == true) {
+        if (detectObjectWallCollision(px, py - positionInterval) == true) {
           direction = 0;
         }
         break;
       case 2:
-        if (detectObjectWallCollision(px + 10, py) == true) {
+        if (detectObjectWallCollision(px + positionInterval, py) == true) {
           direction = 0;
         }
         break;
       case 3:
-        if (detectObjectWallCollision(px, py + 10) == true) {
+        if (detectObjectWallCollision(px, py + positionInterval) == true) {
           direction = 0;
         }
         break;
       case 4:
-        if (detectObjectWallCollision(px - 10, py) == true) {
+        if (detectObjectWallCollision(px - positionInterval, py) == true) {
           direction = 0;
         }
         break;
