@@ -106,7 +106,7 @@ function pacmanGame() {
     createPills();
 
     // Detect wall collision.
-    detectWallCollision();
+    detectPacmanWallCollision();
 
     // Detect pill collision.
     detectPillCollision();
@@ -207,14 +207,11 @@ function createPills() {
         // Remove pills based on collision with walls.
         for (var i = 0; i < pills.length; i++) {
             for (var w = 0; w < walls.length; w++) {
-                if (pills[i][0] < walls[w][0][0] + walls[w][1] &&
-                    pills[i][0] + pillSize > walls[w][0][0] &&
-                    pills[i][1] < walls[w][0][1] + walls[w][2] &&
-                    pillSize + pills[i][1] > walls[w][0][1]) {
-
-                    // Set to -1000 to keep length and remove from viewport.
-                    pills[i][0] = -1000;
-                }
+              if (detectObjectsCollision(pills[i][0], pills[i][1], pillSize, pillSize,
+                walls[w][0][0], walls[w][0][1], walls[w][1], walls[w][2])) {
+                // Set to -1000 to keep length and remove from viewport.
+                pills[i][0] = -1000;
+              }
             }
         }
     }
@@ -231,72 +228,19 @@ function createPills() {
 }
 
 // Detect wall collision and stop pacman.
-function detectWallCollision() {
-    // Get if pacman is in path.
-    if (direction !== 0) {
-        switch (direction) {
-            case 1:
-                if (detectObjectWallCollision(px, py - positionInterval)) {
-                    direction = 0;
-                }
-                break;
-            case 2:
-                if (detectObjectWallCollision(px + positionInterval, py)) {
-                    direction = 0;
-                }
-                break;
-            case 3:
-                if (detectObjectWallCollision(px, py + positionInterval)) {
-                    direction = 0;
-                }
-                break;
-            case 4:
-                if (detectObjectWallCollision(px - positionInterval, py)) {
-                    direction = 0;
-                }
-                break;
-        }
-    }
-}
-/**
- * Detect object collision with walls.
- *
- * @param integer x
- *   x position.
- * @param integer y
- *   y position.
- *
- * @returns boolean
- *   True if there is collision.
- */
-function detectObjectWallCollision(x, y) {
+function detectPacmanWallCollision() {
 
-    for (var i = 0; i < walls.length; i++) {
-        // Collision detection.
-        // rect1.x < rect2.x + rect2.w &&
-        // rect1.x + rect1.w > rect2.x &&
-        // rect1.y < rect2.y + rect2.h &&
-        // rect1.h + rect1.y > rect2.y
-        if (x < walls[i][0][0] + walls[i][1] &&
-            x + objectSize > walls[i][0][0] &&
-            y < walls[i][0][1] + walls[i][2] &&
-            objectSize + y > walls[i][0][1]) {
-
-            return true;
-        }
-    }
-
-    return false;
+  if (detectWallCollisionOnDirection(px, py, direction)) {
+    direction = 0;
+  }
 }
 
 // Detect pill collision.
 function detectPillCollision() {
 
     for (var i = 0; i < pills.length; i++) {
-        if (px < pills[i][0] + pillSize &&
-            px + objectSize > pills[i][0] &&
-            py < pills[i][1] + pillSize &&
-            objectSize + py > pills[i][1]) {
+        if (detectObjectsCollision(px, py, objectSize, objectSize,
+          pills[i][0], pills[i][1], pillSize, pillSize)) {
 
             // Set to -1000 to keep length and remove from viewport.
             pills[i][0] = -1000;
@@ -348,10 +292,8 @@ function detectGhostPacmanCollision() {
     // If ghosts are not blue, the game is lost and it resets, if ghosts are blue,
     // the ghost is set inactive for some seconds.
     ghosts.forEach(ghost => {
-        if (px < ghost.x + objectSize &&
-            px + objectSize > ghost.x &&
-            py < ghost.y + objectSize &&
-            objectSize + py > ghost.y) {
+        if (detectObjectsCollision(px, py, objectSize, objectSize,
+          ghost.x, ghost.y, objectSize, objectSize)) {
 
             if (bluePillIsActive) {
                 // Disable ghost.
@@ -413,7 +355,7 @@ function setGhosts() {
                     ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost.x, ghost.y, ghost.direction);
                 }
                 break;
-        }        
+        }
       }
     });
 }
@@ -433,11 +375,11 @@ function calculateNextDirectionBasedOnPacmanPosition(gx, gy) {
     // Check x position and if is blocked try x positions.
     if (Math.abs(x) >= Math.abs(y)) {
         let preferredDirection = x >= 0 ? 2 : 4;
-        if (checkCollisionWithWalls(gx, gy, preferredDirection)) {
+        if (detectWallCollisionOnDirection(gx, gy, preferredDirection)) {
             preferredDirection = x >= 0 ? 4 : 2;
-            if (checkCollisionWithWalls(gx, gy, preferredDirection)) {
+            if (detectWallCollisionOnDirection(gx, gy, preferredDirection)) {
                 preferredDirection = 1;
-                if (checkCollisionWithWalls(gx, gy, preferredDirection)) {
+                if (detectWallCollisionOnDirection(gx, gy, preferredDirection)) {
                     preferredDirection = 3;
                 }
             }
@@ -448,11 +390,11 @@ function calculateNextDirectionBasedOnPacmanPosition(gx, gy) {
     // Check y position and if is blocked try x positions.
     if (Math.abs(x) <= Math.abs(y)) {
         let preferredDirection = y >= 0 ? 1 : 3;
-        if (checkCollisionWithWalls(gx, gy, preferredDirection)) {
+        if (detectWallCollisionOnDirection(gx, gy, preferredDirection)) {
             preferredDirection = y >= 0 ? 3 : 1;
-            if (checkCollisionWithWalls(gx, gy, preferredDirection)) {
+            if (detectWallCollisionOnDirection(gx, gy, preferredDirection)) {
                 preferredDirection = 2;
-                if (checkCollisionWithWalls(gx, gy, preferredDirection)) {
+                if (detectWallCollisionOnDirection(gx, gy, preferredDirection)) {
                     preferredDirection = 4;
                 }
             }
@@ -462,7 +404,7 @@ function calculateNextDirectionBasedOnPacmanPosition(gx, gy) {
 }
 
 /**
- * Check for collision.
+ * Check for collision with walls for an object in its direction.
  *
  * @param x
  *  Object x.
@@ -473,7 +415,7 @@ function calculateNextDirectionBasedOnPacmanPosition(gx, gy) {
  * @returns {boolean}
  *  Return true if collision exists, else false.
  */
-function checkCollisionWithWalls(x, y, direction) {
+function detectWallCollisionOnDirection(x, y, direction) {
     switch (direction) {
         case 1:
             return detectObjectWallCollision(x, y - positionInterval);
@@ -484,4 +426,47 @@ function checkCollisionWithWalls(x, y, direction) {
         case 4:
             return detectObjectWallCollision(x - positionInterval, y);
     }
+}
+
+/**
+ * Detect object collision with walls.
+ *
+ * @param integer x
+ *   x position.
+ * @param integer y
+ *   y position.
+ *
+ * @returns boolean
+ *   True if there is collision.
+ */
+function detectObjectWallCollision(x, y) {
+
+    for (var i = 0; i < walls.length; i++) {
+        // Collision detection.
+        if (detectObjectsCollision(x, y, objectSize, objectSize,
+          walls[i][0][0], walls[i][0][1], walls[i][1], walls[i][2])) {
+          return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Detect collision between generic objects.
+ */
+function detectObjectsCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
+  // Collision detection.
+  // rect1.x < rect2.x + rect2.w &&
+  // rect1.x + rect1.w > rect2.x &&
+  // rect1.y < rect2.y + rect2.h &&
+  // rect1.h + rect1.y > rect2.y
+  if (x1 < x2 + w2 &&
+      x1 + w1 > x2 &&
+      y1 < y2 + h2 &&
+      h1 + y1 > y2) {
+      return true;
+  }
+
+  return false;
 }
