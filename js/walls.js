@@ -35,7 +35,7 @@ window.walls = function(pillDistance) {
     [[pillDistance * 5, pillDistance * 6], 10, 10 + pillDistance * 2],
     [[pillDistance * 6, pillDistance * 8], 10 + pillDistance * 2, 10],
     // Upper-right.
-    [[pillDistance * 9, 0], 10, 10 + pillDistance * 2],
+    [[pillDistance * 9, pillDistance], 10, 10 + pillDistance],
     [[pillDistance * 9, pillDistance * 3], 10, 10 + pillDistance * 2],
     [[pillDistance * 10, pillDistance], 10, 10 + pillDistance],
     [[pillDistance * 10, pillDistance * 5], 10, 10 + pillDistance],
