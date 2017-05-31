@@ -356,6 +356,8 @@ function detectGhostPacmanCollision() {
             if (bluePillIsActive) {
                 // Disable ghost.
                 ghost.active = false;
+                ghost.x = 10 + pillDistance * 7;
+                ghost.y = 10 + pillDistance * 6;
                 setTimeout(function () {
                     ghost.active = true;
                 }, 6000);
@@ -377,6 +379,7 @@ function detectGhostPacmanCollision() {
 function setGhosts() {
     // "sudo-AI"
     ghosts.forEach(ghost => {
+      if (ghost.active) {
         switch (ghost.direction) {
             case 1:
                 if (!detectObjectWallCollision(ghost.x, ghost.y - positionInterval)) {
@@ -410,7 +413,8 @@ function setGhosts() {
                     ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost.x, ghost.y, ghost.direction);
                 }
                 break;
-        }
+        }        
+      }
     });
 }
 
