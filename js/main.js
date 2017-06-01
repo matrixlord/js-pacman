@@ -48,19 +48,19 @@ const pillSize = 4;
 
 // Rendered pill.
 let canvasPill = document.createElement("canvas"),
-    pillContext = canvasPill.getContext("2d");
+pillContext = canvasPill.getContext("2d");
 canvasPill.width = canvasPill.height = pillSize;
+pillContext.arc(pillSize / 2, pillSize / 2, pillSize / 2, 0, 2 * Math.PI, false);
 pillContext.fillStyle = 'yellow';
-pillContext.fillRect(0, 0, pillSize, pillSize);
-pillContext.stroke();
+pillContext.fill();
 
 // Blue pill.
 let canvasBluePill = document.createElement("canvas"),
-    pillBlueContext = canvasBluePill.getContext("2d");
+pillBlueContext = canvasBluePill.getContext("2d");
 canvasBluePill.width = canvasBluePill.height = pillSize * 2;
+pillBlueContext.arc(pillSize, pillSize, pillSize, 0, 2 * Math.PI, false);
 pillBlueContext.fillStyle = 'yellow';
-pillBlueContext.fillRect(0, 0, pillSize * 2, pillSize * 2);
-pillBlueContext.stroke();
+pillBlueContext.fill();
 
 // True if the blue pill is active.
 let bluePillIsActive = false;
