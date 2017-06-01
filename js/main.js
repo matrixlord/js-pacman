@@ -353,7 +353,7 @@ function calculateNextDirectionBasedOnPacmanPosition(ghost) {
     // Create an order of choices array. The first value is the choice based on
     // preferred axis and distance and the second is the direction, the ghost,
     // should choose.
-    const choices = [
+    let choices = [
       [!preferredAxis && dx == 0, 1],
       [preferredAxis && dy == 0, 2],
       [!preferredAxis && dx == 0, 3],
@@ -367,6 +367,9 @@ function calculateNextDirectionBasedOnPacmanPosition(ghost) {
       [preferredAxis && dy >= 0, 3],
       [preferredAxis && dx <= 0, 4],
     ];
+
+    // Reverse array of choices if blue pill is active.
+    choices = bluePillIsActive ? choices.reverse() : choices;
 
     for (var i = 0; i < choices.length; i++) {
       if (choices[i][0] && !detectWallCollisionOnDirection(ghost.x, ghost.y, choices[i][1])) {
