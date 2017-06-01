@@ -12,7 +12,8 @@ window.walls = function(pillDistance) {
     [[pillDistance * 6, pillDistance * 7], 10 + pillDistance * 3, 10],
     // Other walls.
     // Upper-left.
-    [[pillDistance, pillDistance], 10, 10 + pillDistance * 3],
+    [[pillDistance, pillDistance], 10, 10 + pillDistance],
+    [[pillDistance, pillDistance * 3], 10, 10 + pillDistance],
     [[pillDistance, pillDistance * 5], 10, 10 + pillDistance * 3],
     [[pillDistance * 2, pillDistance], 10 + pillDistance * 1, 10],
     [[pillDistance * 4, pillDistance], 10 + pillDistance * 3, 10],
@@ -23,7 +24,7 @@ window.walls = function(pillDistance) {
     [[pillDistance * 2, pillDistance * 4], 10, 10 + pillDistance * 2],
     [[pillDistance * 2, pillDistance * 7], 10, 10 + pillDistance * 2],
     [[pillDistance * 3, pillDistance * 4], 10, 10 + pillDistance * 3],
-    [[pillDistance * 8, 0], 10, 10 + pillDistance * 2],
+    [[pillDistance * 8, pillDistance], 10, 10 + pillDistance],
     [[pillDistance * 8, 0], 10 + pillDistance * 3, 10],
     [[pillDistance * 8, pillDistance * 3], 10, 10 + pillDistance * 2],
     [[pillDistance * 4, pillDistance * 4], 10 + pillDistance * 3, 10],
@@ -50,7 +51,7 @@ window.walls = function(pillDistance) {
     [[pillDistance * 10, pillDistance * 5], 10 + pillDistance, 10],
     [[pillDistance * 10, pillDistance * 7], 10 + pillDistance, 10],
     [[pillDistance * 12, pillDistance * 7], 10 + pillDistance, 10],
-    [[pillDistance * 9, pillDistance * 8], 10 + pillDistance * 5, 10],
+    [[pillDistance * 9, pillDistance * 8], 10 + pillDistance * 4, 10],
     // Lower left.
     [[pillDistance * 1, pillDistance * 9], 10, 10 + pillDistance * 4],
     [[pillDistance * 1, pillDistance * 10], 10 + pillDistance * 3, 10],
@@ -68,7 +69,7 @@ window.walls = function(pillDistance) {
     [[pillDistance * 10, pillDistance * 9], 10, 10 + pillDistance * 3],
     [[pillDistance * 9, pillDistance * 13], 10 + pillDistance, 10],
     [[pillDistance * 11, pillDistance * 9], 10, 10 + pillDistance * 2],
-    [[pillDistance * 11, pillDistance * 12], 10, 10 + pillDistance * 2],
+    [[pillDistance * 11, pillDistance * 12], 10, 10 + pillDistance],
     [[pillDistance * 12, pillDistance * 9], 10 + pillDistance, 10],
     [[pillDistance * 12, pillDistance * 10], 10 + pillDistance, 10],
     [[pillDistance * 12, pillDistance * 11], 10 + pillDistance, 10 + pillDistance],
