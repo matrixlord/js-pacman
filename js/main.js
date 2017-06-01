@@ -1,9 +1,7 @@
 /**
  @todo,
- - Ghost collision (blue pill collision) -> done
- - Ghost AI
- - Ghost respawn in the first position
- - Win criteria -> done
+ - Animation.
+ - Sprite y positions: 0, 95, 191, 292, 396, 498.
  */
 let gameLoop;
 window.onload = function () {
@@ -20,6 +18,9 @@ window.onload = function () {
     gameLoop = setInterval(pacmanGame, 1000 / 16.67);
 }
 
+// Pacman and ghost size.
+const objectSize = 30;
+
 // Key being pressed.
 let keyState = {};
 
@@ -29,9 +30,6 @@ let py = 10;
 
 // Pacman direction. 0 -> none, 1 -> up, 2 -> right, 3 -> down, 4 -> left.
 let direction = 0;
-
-// Pacman size.
-const objectSize = 30;
 
 // Position interval.
 const positionInterval = 10;
@@ -70,10 +68,14 @@ let bluePillIsActive = false;
 // Ghosts position. x, y, direction, color.
 // lastCollisions is an array with x, y, direction. It keeps the last 100.
 let ghosts = [
-    {x: 10 + pillDistance * 6, y: 10 + pillDistance * 6, direction: 4, color: "green", active: true, lastMoves: []},
+    {x: 10 + pillDistance * 6, y: 10 + pillDistance * 6, direction: 4, color: "cyan", active: true, lastMoves: []},
     {x: 10 + pillDistance * 7, y: 10 + pillDistance * 6, direction: 1, color: "red", active: true, lastMoves: []},
     {x: 10 + pillDistance * 8, y: 10 + pillDistance * 6, direction: 2, color: "pink", active: true, lastMoves: []},
 ];
+
+// Load image sprite and preload.
+let imageObj = new Image();
+imageObj.src = 'images/sprite.png';
 
 // Initialize walls.
 const walls = window.walls(pillDistance);
@@ -89,22 +91,21 @@ wallContext.strokeStyle = '#0000FF';
 
 function pacmanGame() {
 
-    // Get key and change direction.
-    setDirection();
-
     // Set background.
     canvasContext.fillStyle = "black";
     canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Set pacman position.
-    canvasContext.fillStyle = "yellow";
-    canvasContext.fillRect(px, py, objectSize, objectSize);
 
     // Create walls.
     createWalls();
 
     // Create pills.
     createPills();
+
+    // Get key and change direction.
+    setDirection();
+
+    // Render pacman.
+    renderPacman();
 
     // Detect wall collision.
     detectPacmanWallCollision();
@@ -117,48 +118,6 @@ function pacmanGame() {
 
     // Detect ghost collision with pacman.
     detectGhostPacmanCollision();
-}
-
-function setDirection() {
-    // Change direction based on keystate.
-    if (keyState[38]) {
-        if (detectObjectWallCollision(px, py - positionInterval) == false) {
-            direction = 1;
-        }
-    }
-    else if (keyState[39]) {
-        if (detectObjectWallCollision(px + positionInterval, py) == false) {
-            direction = 2;
-        }
-    }
-    else if (keyState[40]) {
-        if (detectObjectWallCollision(px, py + positionInterval) == false) {
-            direction = 3;
-        }
-    }
-    else if (keyState[37]) {
-        if (detectObjectWallCollision(px - positionInterval, py) == false) {
-            direction = 4;
-        }
-    }
-
-    if (direction != 0) {
-        // Set movement based on direction.
-        switch (direction) {
-            case 1:
-                py = py - positionInterval;
-                break;
-            case 2:
-                px = px + positionInterval;
-                break;
-            case 3:
-                py = py + positionInterval;
-                break;
-            case 4:
-                px = px - positionInterval;
-                break;
-        }
-    }
 }
 
 // Create walls.
@@ -225,6 +184,79 @@ function createPills() {
     }
 }
 
+function setDirection() {
+    // Change direction based on keystate.
+    if (keyState[38]) {
+        if (detectObjectWallCollision(px, py - positionInterval) == false) {
+            direction = 1;
+        }
+    }
+    else if (keyState[39]) {
+        if (detectObjectWallCollision(px + positionInterval, py) == false) {
+            direction = 2;
+        }
+    }
+    else if (keyState[40]) {
+        if (detectObjectWallCollision(px, py + positionInterval) == false) {
+            direction = 3;
+        }
+    }
+    else if (keyState[37]) {
+        if (detectObjectWallCollision(px - positionInterval, py) == false) {
+            direction = 4;
+        }
+    }
+
+    if (direction != 0) {
+        // Set movement based on direction.
+        switch (direction) {
+            case 1:
+                py = py - positionInterval;
+                break;
+            case 2:
+                px = px + positionInterval;
+                break;
+            case 3:
+                py = py + positionInterval;
+                break;
+            case 4:
+                px = px - positionInterval;
+                break;
+        }
+    }
+}
+
+// Render pacman.
+function renderPacman() {
+
+  // Pacman canvas.
+  let canvasPacman = document.createElement("canvas"),
+  pacmanContext = canvasPacman.getContext("2d");
+  canvasPacman.width = canvasPacman.height = objectSize;
+
+  // Rotate based on direction.
+  switch (direction) {
+      case 1:
+          pacmanContext.translate(0, 30);
+          pacmanContext.rotate(-90 * Math.PI / 180);
+          break;
+      case 3:
+          pacmanContext.translate(30, 0);
+          pacmanContext.rotate(90 * Math.PI / 180);
+          break;
+      case 4:
+          pacmanContext.translate(30, 30);
+          pacmanContext.rotate(Math.PI);
+          break;
+  }
+
+  // Get image of pacman to interchange between 30px intervals.
+  clip = (px + py)%30 == 10 ? 0 : 95;
+  pacmanContext.drawImage(imageObj, 0, clip, 100, 96, 0, 0, 30, 30);
+
+  canvasContext.drawImage(pacmanContext.canvas, px, py);
+}
+
 // Detect wall collision and stop pacman.
 function detectPacmanWallCollision() {
   if (detectWallCollisionOnDirection(px, py, direction)) {
@@ -278,8 +310,28 @@ function createGhosts() {
     // Render ghosts.
     ghosts.forEach(ghost => {
         if (ghost.active) {
-            canvasContext.fillStyle = bluePillIsActive ? "cyan" : ghost.color;
-            canvasContext.fillRect(ghost.x, ghost.y, objectSize, objectSize);
+          let canvasGhost = document.createElement("canvas"),
+          ghostContext = canvasGhost.getContext("2d");
+          canvasGhost.width = canvasGhost.height = objectSize;
+
+          if (bluePillIsActive) {
+            ghostContext.drawImage(imageObj, 0, 498, 100, 100, 0, 0, 30, 30);
+            canvasContext.drawImage(ghostContext.canvas, ghost.x, ghost.y);
+          }
+          else {
+            // Get image of ghost from sprite.
+            let clip = 0;
+            switch (ghost.color) {
+                case 'pink': clip = 191;
+                    break;
+                case 'red': clip = 292;
+                    break;
+                case 'cyan': clip = 396;
+                    break;
+            }
+            ghostContext.drawImage(imageObj, 0, clip, 100, 100, 0, 0, 30, 30);
+            canvasContext.drawImage(ghostContext.canvas, ghost.x, ghost.y);
+          }
         }
     });
 }
