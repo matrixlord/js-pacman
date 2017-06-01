@@ -227,7 +227,6 @@ function createPills() {
 
 // Detect wall collision and stop pacman.
 function detectPacmanWallCollision() {
-
   if (detectWallCollisionOnDirection(px, py, direction)) {
     direction = 0;
   }
@@ -314,45 +313,25 @@ function detectGhostPacmanCollision() {
 
 /**
  * Calculate ghost next direction.
- * @todo clean up code. It can be simpler but I'm too sleepy right now.
  */
 function setGhosts() {
   // "sudo-AI"
   ghosts.forEach(ghost => {
     if (ghost.active) {
-      switch (ghost.direction) {
-          case 1:
-              if (!detectObjectWallCollision(ghost.x, ghost.y - positionInterval)) {
-                  ghost.y -= positionInterval;
-              } else {
-                  // Find new direction.
-                  ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost);
-              }
-              break;
-          case 2:
-              if (!detectObjectWallCollision(ghost.x + positionInterval, ghost.y)) {
-                  ghost.x += positionInterval;
-              } else {
-                  // Find new direction.
-                  ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost);
-              }
-              break;
-          case 3:
-              if (!detectObjectWallCollision(ghost.x, ghost.y + positionInterval)) {
-                  ghost.y += positionInterval;
-              } else {
-                  // Find new direction.
-                  ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost);
-              }
-              break;
-          case 4:
-              if (!detectObjectWallCollision(ghost.x - positionInterval, ghost.y)) {
-                  ghost.x -= positionInterval;
-              } else {
-                  // Find new direction.
-                  ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost);
-              }
-              break;
+      if (!detectWallCollisionOnDirection(ghost.x, ghost.y, ghost.direction)) {
+        switch (ghost.direction) {
+            case 1: ghost.y -= positionInterval;
+                break;
+            case 2: ghost.x += positionInterval;
+                break;
+            case 3: ghost.y += positionInterval;
+                break;
+            case 4: ghost.x -= positionInterval;
+                break;
+        }
+      }
+      else {
+        ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost);
       }
     }
   });
