@@ -89,6 +89,17 @@ var canvasWall = document.createElement("canvas"),
 canvasWall.width = canvasWall.height = 580;
 wallContext.strokeStyle = '#0000FF';
 
+// Get a weighted random number. This is used on ghosts to get a weighted
+// decision.
+let randomHelper = [];
+for (var i = 1; i <= 12; i++) {
+  for (var j = i; j <= 12; j++) {
+    for (var x = 1; x <= 14 - i; x++) {
+      randomHelper.push(i);
+    }
+  }
+}
+
 function pacmanGame() {
 
     // Set background.
@@ -435,7 +446,8 @@ function calculateNextDirectionBasedOnPacmanPosition(ghost) {
     // Reverse array of choices if blue pill is active.
     choices = bluePillIsActive ? choices.reverse() : choices;
 
-    for (var i = 0; i < choices.length; i++) {
+    startPoint = randomHelper[Math.floor((Math.random() * randomHelper.length))];
+    for (var i = startPoint; i < choices.length; i++) {
       if (choices[i][0] && !detectWallCollisionOnDirection(ghost.x, ghost.y, choices[i][1])) {
         return choices[i][1];
       }
