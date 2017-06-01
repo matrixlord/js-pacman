@@ -68,6 +68,7 @@ pillBlueContext.stroke();
 let bluePillIsActive = false;
 
 // Ghosts position. x, y, direction, color.
+// lastCollisions is an array with x, y, direction. It keeps the last 100.
 let ghosts = [
     {x: 10 + pillDistance * 6, y: 10 + pillDistance * 6, direction: 4, color: "green", active: true, lastMoves: []},
     {x: 10 + pillDistance * 7, y: 10 + pillDistance * 6, direction: 1, color: "red", active: true, lastMoves: []},
@@ -189,9 +190,6 @@ function createPills() {
         // Get all x,y values.
         for (var x = 23; x <= 570; x = x + pillDistance) {
             for (var y = 23; y <= 570; y = y + pillDistance) {
-
-                // Create pills everywhere at the begining.
-
                 // Randomly generate blue pill.
                 if (Math.floor((Math.random() * 100) + 1) > 94) {
                     var pill = [x - 3, y - 3, 1];
@@ -319,88 +317,82 @@ function detectGhostPacmanCollision() {
  * @todo clean up code. It can be simpler but I'm too sleepy right now.
  */
 function setGhosts() {
-    // "sudo-AI"
-    ghosts.forEach(ghost => {
-      if (ghost.active) {
-        switch (ghost.direction) {
-            case 1:
-                if (!detectObjectWallCollision(ghost.x, ghost.y - positionInterval)) {
-                    ghost.y -= positionInterval;
-                } else {
-                    // Find new direction.
-                    ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost.x, ghost.y, ghost.direction);
-                }
-                break;
-            case 2:
-                if (!detectObjectWallCollision(ghost.x + positionInterval, ghost.y)) {
-                    ghost.x += positionInterval;
-                } else {
-                    // Find new direction.
-                    ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost.x, ghost.y, ghost.direction);
-                }
-                break;
-            case 3:
-                if (!detectObjectWallCollision(ghost.x, ghost.y + positionInterval)) {
-                    ghost.y += positionInterval;
-                } else {
-                    // Find new direction.
-                    ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost.x, ghost.y, ghost.direction);
-                }
-                break;
-            case 4:
-                if (!detectObjectWallCollision(ghost.x - positionInterval, ghost.y)) {
-                    ghost.x -= positionInterval;
-                } else {
-                    // Find new direction.
-                    ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost.x, ghost.y, ghost.direction);
-                }
-                break;
-        }
+  // "sudo-AI"
+  ghosts.forEach(ghost => {
+    if (ghost.active) {
+      switch (ghost.direction) {
+          case 1:
+              if (!detectObjectWallCollision(ghost.x, ghost.y - positionInterval)) {
+                  ghost.y -= positionInterval;
+              } else {
+                  // Find new direction.
+                  ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost);
+              }
+              break;
+          case 2:
+              if (!detectObjectWallCollision(ghost.x + positionInterval, ghost.y)) {
+                  ghost.x += positionInterval;
+              } else {
+                  // Find new direction.
+                  ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost);
+              }
+              break;
+          case 3:
+              if (!detectObjectWallCollision(ghost.x, ghost.y + positionInterval)) {
+                  ghost.y += positionInterval;
+              } else {
+                  // Find new direction.
+                  ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost);
+              }
+              break;
+          case 4:
+              if (!detectObjectWallCollision(ghost.x - positionInterval, ghost.y)) {
+                  ghost.x -= positionInterval;
+              } else {
+                  // Find new direction.
+                  ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost);
+              }
+              break;
       }
-    });
+    }
+  });
 }
 
 /**
  * Calculate next direction for a ghost based on Pacman current position.
  *
- * @param gx
- *  Ghost x point.
- * @param gy
- *  Ghost y point.
+ * @param ghost
+ *  Ghost object.
  */
-function calculateNextDirectionBasedOnPacmanPosition(gx, gy) {
-    const x = px - gx;
-    const y = py - gy;
+function calculateNextDirectionBasedOnPacmanPosition(ghost) {
+    const dx = px - ghost.x;
+    const dy = py - ghost.y;
 
-    // Check x position and if is blocked try x positions.
-    if (Math.abs(x) >= Math.abs(y)) {
-        let preferredDirection = x >= 0 ? 2 : 4;
-        if (detectWallCollisionOnDirection(gx, gy, preferredDirection)) {
-            preferredDirection = x >= 0 ? 4 : 2;
-            if (detectWallCollisionOnDirection(gx, gy, preferredDirection)) {
-                preferredDirection = 1;
-                if (detectWallCollisionOnDirection(gx, gy, preferredDirection)) {
-                    preferredDirection = 3;
-                }
-            }
-        }
-        return preferredDirection;
+    // The preferred axis will be x if true, y if false.
+    preferredAxis = Math.abs(dx) >= Math.abs(dy);
+
+    // Create an order of choices array. The first value is the choice based on
+    // preferred axis and distance and the second is the direction, the ghost,
+    // shoult choose.
+    const choices = [
+      [!preferredAxis && dy <= 0, 1],
+      [preferredAxis && dx >= 0, 2],
+      [!preferredAxis && dy >= 0, 3],
+      [preferredAxis && dx <= 0 , 4],
+      [preferredAxis && dy <= 0, 1],
+      [!preferredAxis && dx >= 0, 2],
+      [preferredAxis && dy >= 0, 3],
+      [preferredAxis && dx <= 0, 4],
+    ];
+
+    for (var i = 0; i < choices.length; i++) {
+      if (choices[i][0] && !detectWallCollisionOnDirection(ghost.x, ghost.y, choices[i][1])) {
+        return choices[i][1];
+      }
     }
 
-    // Check y position and if is blocked try x positions.
-    if (Math.abs(x) <= Math.abs(y)) {
-        let preferredDirection = y >= 0 ? 1 : 3;
-        if (detectWallCollisionOnDirection(gx, gy, preferredDirection)) {
-            preferredDirection = y >= 0 ? 3 : 1;
-            if (detectWallCollisionOnDirection(gx, gy, preferredDirection)) {
-                preferredDirection = 2;
-                if (detectWallCollisionOnDirection(gx, gy, preferredDirection)) {
-                    preferredDirection = 4;
-                }
-            }
-        }
-        return preferredDirection;
-    }
+    // If no choice found.
+    return Math.floor((Math.random() * 4) + 1);
 }
 
 /**
