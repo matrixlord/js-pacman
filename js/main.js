@@ -87,6 +87,17 @@ var canvasWall = document.createElement("canvas"),
 canvasWall.width = canvasWall.height = 580;
 wallContext.strokeStyle = '#0000FF';
 
+// Get a weighted random number. This is used on ghosts to get a weighted
+// decision.
+let randomHelper = [];
+for (var i = 1; i <= 12; i++) {
+  for (var j = i; j <= 12; j++) {
+    for (var x = 1; x <= 14 - i; x++) {
+      randomHelper.push(i);
+    }
+  }
+}
+
 function pacmanGame() {
 
     // Get key and change direction.
@@ -315,9 +326,22 @@ function detectGhostPacmanCollision() {
  * Calculate ghost next direction.
  */
 function setGhosts() {
-  // "sudo-AI"
+  // "pseudo-AI"
   ghosts.forEach(ghost => {
     if (ghost.active) {
+
+      // 50% to change direction. 
+      if (Math.round((Math.random())) > 0) {
+        collisions = 0;
+        for (var i = 1; i <= 4; i++) {
+          if (detectWallCollisionOnDirection(ghost.x, ghost.y, i)) {
+            collisions++;
+          }
+        }
+        if (collisions == 1) {
+          ghost.direction = calculateNextDirectionBasedOnPacmanPosition(ghost);
+        }
+      }
       if (!detectWallCollisionOnDirection(ghost.x, ghost.y, ghost.direction)) {
         switch (ghost.direction) {
             case 1: ghost.y -= positionInterval;
@@ -352,8 +376,12 @@ function calculateNextDirectionBasedOnPacmanPosition(ghost) {
 
     // Create an order of choices array. The first value is the choice based on
     // preferred axis and distance and the second is the direction, the ghost,
-    // shoult choose.
+    // should choose.
     const choices = [
+      [!preferredAxis && dx == 0, 1],
+      [preferredAxis && dy == 0, 2],
+      [!preferredAxis && dx == 0, 3],
+      [preferredAxis && dy == 0 , 4],
       [!preferredAxis && dy <= 0, 1],
       [preferredAxis && dx >= 0, 2],
       [!preferredAxis && dy >= 0, 3],
@@ -364,7 +392,8 @@ function calculateNextDirectionBasedOnPacmanPosition(ghost) {
       [preferredAxis && dx <= 0, 4],
     ];
 
-    for (var i = 0; i < choices.length; i++) {
+    startPoint = randomHelper[Math.floor((Math.random() * randomHelper.length))];
+    for (var i = startPoint; i < choices.length; i++) {
       if (choices[i][0] && !detectWallCollisionOnDirection(ghost.x, ghost.y, choices[i][1])) {
         return choices[i][1];
       }
