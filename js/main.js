@@ -1,9 +1,7 @@
 /**
  @todo,
- - Ghost collision (blue pill collision) -> done
- - Ghost AI
- - Ghost respawn in the first position
- - Win criteria -> done
+ - Animation.
+ - Sprite y positions: 0, 95, 191, 292, 396, 498.
  */
 let gameLoop;
 window.onload = function () {
@@ -20,6 +18,9 @@ window.onload = function () {
     gameLoop = setInterval(pacmanGame, 1000 / 16.67);
 }
 
+// Pacman and ghost size.
+const objectSize = 30;
+
 // Key being pressed.
 let keyState = {};
 
@@ -27,11 +28,13 @@ let keyState = {};
 let px = 10;
 let py = 10;
 
+// Pacman canvas.
+let canvasPacman = document.createElement("canvas"),
+pacmanContext = canvasPacman.getContext("2d");
+canvasPacman.width = canvasPacman.height = objectSize;
+
 // Pacman direction. 0 -> none, 1 -> up, 2 -> right, 3 -> down, 4 -> left.
 let direction = 0;
-
-// Pacman size.
-const objectSize = 30;
 
 // Position interval.
 const positionInterval = 10;
@@ -75,6 +78,10 @@ let ghosts = [
     {x: 10 + pillDistance * 8, y: 10 + pillDistance * 6, direction: 2, color: "pink", active: true, lastMoves: []},
 ];
 
+// Load image sprite and preload.
+let imageObj = new Image();
+imageObj.src = 'images/sprite.png';
+
 // Initialize walls.
 const walls = window.walls(pillDistance);
 
@@ -97,8 +104,8 @@ function pacmanGame() {
     canvasContext.fillRect(0, 0, canvas.width, canvas.height);
 
     // Set pacman position.
-    canvasContext.fillStyle = "yellow";
-    canvasContext.fillRect(px, py, objectSize, objectSize);
+    pacmanContext.drawImage(imageObj, 0, 0, 100, 95, 0, 0, 30, 30);
+    canvasContext.drawImage(pacmanContext.canvas, px, py);
 
     // Create walls.
     createWalls();
