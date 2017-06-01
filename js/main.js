@@ -87,17 +87,6 @@ var canvasWall = document.createElement("canvas"),
 canvasWall.width = canvasWall.height = 580;
 wallContext.strokeStyle = '#0000FF';
 
-// Get a weighted random number. This is used on ghosts to get a weighted
-// decision.
-let randomHelper = [];
-for (var i = 1; i <= 12; i++) {
-  for (var j = i; j <= 12; j++) {
-    for (var x = 1; x <= 14 - i; x++) {
-      randomHelper.push(i);
-    }
-  }
-}
-
 function pacmanGame() {
 
     // Get key and change direction.
@@ -329,7 +318,6 @@ function setGhosts() {
   // "pseudo-AI"
   ghosts.forEach(ghost => {
     if (ghost.active) {
-
       // 50% to change direction.
       if (Math.round((Math.random())) > 0) {
         collisions = 0;
@@ -377,7 +365,7 @@ function calculateNextDirectionBasedOnPacmanPosition(ghost) {
     // Create an order of choices array. The first value is the choice based on
     // preferred axis and distance and the second is the direction, the ghost,
     // should choose.
-    const choices = [
+    let choices = [
       [!preferredAxis && dx == 0, 1],
       [preferredAxis && dy == 0, 2],
       [!preferredAxis && dx == 0, 3],
@@ -392,8 +380,10 @@ function calculateNextDirectionBasedOnPacmanPosition(ghost) {
       [preferredAxis && dx <= 0, 4],
     ];
 
-    startPoint = randomHelper[Math.floor((Math.random() * randomHelper.length))];
-    for (var i = startPoint; i < choices.length; i++) {
+    // Reverse array of choices if blue pill is active.
+    choices = bluePillIsActive ? choices.reverse() : choices;
+
+    for (var i = 0; i < choices.length; i++) {
       if (choices[i][0] && !detectWallCollisionOnDirection(ghost.x, ghost.y, choices[i][1])) {
         return choices[i][1];
       }
