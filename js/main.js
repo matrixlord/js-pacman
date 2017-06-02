@@ -16,7 +16,7 @@ window.onload = function () {
     }, true);
 
     gameLoop = setInterval(pacmanGame, 1000 / 16.67);
-}
+};
 
 // Pacman and ghost size.
 const objectSize = 30;
@@ -84,7 +84,7 @@ const walls = window.walls(pillDistance);
 let wallsCreated = false;
 
 // Wall canvas.
-var canvasWall = document.createElement("canvas"),
+let canvasWall = document.createElement("canvas"),
     wallContext = canvasWall.getContext("2d");
 canvasWall.width = canvasWall.height = 580;
 wallContext.strokeStyle = '#0000FF';
@@ -92,16 +92,15 @@ wallContext.strokeStyle = '#0000FF';
 // Get a weighted random number. This is used on ghosts to get a weighted
 // decision.
 let randomHelper = [];
-for (var i = 1; i <= 12; i++) {
-  for (var j = i; j <= 12; j++) {
-    for (var x = 1; x <= 14 - i; x++) {
+for (let i = 1; i <= 12; i++) {
+  for (let j = i; j <= 12; j++) {
+    for (let x = 1; x <= 14 - i; x++) {
       randomHelper.push(i);
     }
   }
 }
 
 function pacmanGame() {
-
     // Set background.
     canvasContext.fillStyle = "black";
     canvasContext.fillRect(0, 0, canvas.width, canvas.height);
@@ -133,8 +132,8 @@ function pacmanGame() {
 
 // Create walls.
 function createWalls() {
-    if (wallsCreated == false) {
-        for (var i = 0; i < walls.length; i++) {
+    if (!wallsCreated) {
+        for (let i = 0; i < walls.length; i++) {
 
             // Get line.
             x = walls[i][0][0];
@@ -173,8 +172,8 @@ function createPills() {
         }
 
         // Remove pills based on collision with walls.
-        for (var i = 0; i < pills.length; i++) {
-            for (var w = 0; w < walls.length; w++) {
+        for (let i = 0; i < pills.length; i++) {
+            for (let w = 0; w < walls.length; w++) {
               if (detectObjectsCollision(pills[i][0], pills[i][1], pillSize, pillSize,
                 walls[w][0][0], walls[w][0][1], walls[w][1], walls[w][2])) {
                 // Set to -1000 to keep length and remove from viewport.
@@ -184,7 +183,7 @@ function createPills() {
         }
     }
     else {
-        for (var i = 0; i < pills.length; i++) {
+        for (let i = 0; i < pills.length; i++) {
             if (pills[i][2] == 1) {
                 canvasContext.drawImage(pillBlueContext.canvas, pills[i][0], pills[i][1]);
             }
@@ -198,22 +197,22 @@ function createPills() {
 function setDirection() {
     // Change direction based on keystate.
     if (keyState[38]) {
-        if (detectObjectWallCollision(px, py - positionInterval) == false) {
+        if (!detectObjectWallCollision(px, py - positionInterval)) {
             direction = 1;
         }
     }
     else if (keyState[39]) {
-        if (detectObjectWallCollision(px + positionInterval, py) == false) {
+        if (!detectObjectWallCollision(px + positionInterval, py)) {
             direction = 2;
         }
     }
     else if (keyState[40]) {
-        if (detectObjectWallCollision(px, py + positionInterval) == false) {
+        if (!detectObjectWallCollision(px, py + positionInterval)) {
             direction = 3;
         }
     }
     else if (keyState[37]) {
-        if (detectObjectWallCollision(px - positionInterval, py) == false) {
+        if (!detectObjectWallCollision(px - positionInterval, py)) {
             direction = 4;
         }
     }
@@ -239,7 +238,6 @@ function setDirection() {
 
 // Render pacman.
 function renderPacman() {
-
   // Pacman canvas.
   let canvasPacman = document.createElement("canvas"),
   pacmanContext = canvasPacman.getContext("2d");
@@ -277,8 +275,7 @@ function detectPacmanWallCollision() {
 
 // Detect pill collision.
 function detectPillCollision() {
-
-    for (var i = 0; i < pills.length; i++) {
+    for (let i = 0; i < pills.length; i++) {
         if (detectObjectsCollision(px, py, objectSize, objectSize,
           pills[i][0], pills[i][1], pillSize, pillSize)) {
 
@@ -299,7 +296,7 @@ function detectPillCollision() {
 
     // Check win criteria.
     allPillsAreGone = true;
-    for (var i = 0; i < pills.length; i++) {
+    for (let i = 0; i < pills.length; i++) {
         if (pills[i][0] != -1000) {
             allPillsAreGone = false;
             break;
@@ -384,7 +381,7 @@ function setGhosts() {
       // 50% to change direction.
       if (Math.round((Math.random())) > 0) {
         collisions = 0;
-        for (var i = 1; i <= 4; i++) {
+        for (let i = 1; i <= 4; i++) {
           if (detectWallCollisionOnDirection(ghost.x, ghost.y, i)) {
             collisions++;
           }
@@ -447,7 +444,7 @@ function calculateNextDirectionBasedOnPacmanPosition(ghost) {
     choices = bluePillIsActive ? choices.reverse() : choices;
 
     startPoint = randomHelper[Math.floor((Math.random() * randomHelper.length))];
-    for (var i = startPoint; i < choices.length; i++) {
+    for (let i = startPoint; i < choices.length; i++) {
       if (choices[i][0] && !detectWallCollisionOnDirection(ghost.x, ghost.y, choices[i][1])) {
         return choices[i][1];
       }
@@ -494,8 +491,7 @@ function detectWallCollisionOnDirection(x, y, direction) {
  *   True if there is collision.
  */
 function detectObjectWallCollision(x, y) {
-
-    for (var i = 0; i < walls.length; i++) {
+    for (let i = 0; i < walls.length; i++) {
         // Collision detection.
         if (detectObjectsCollision(x, y, objectSize, objectSize,
           walls[i][0][0], walls[i][0][1], walls[i][1], walls[i][2])) {
@@ -508,6 +504,26 @@ function detectObjectWallCollision(x, y) {
 
 /**
  * Detect collision between generic objects.
+ *
+ * @param x1
+ *  Object 1 X.
+ * @param y1
+ *  Object 1 Y.
+ * @param w1
+ *  Object 1 Width.
+ * @param h1
+ *  Object 1 Height.
+ * @param x2
+ *  Object 2 X.
+ * @param y2
+ *  Object 2 Y.
+ * @param w2
+ *  Object 2 Width.
+ * @param h2
+ *  Object 2 Height.
+ *
+ * @returns {boolean}
+ *  True or false if collision detected.
  */
 function detectObjectsCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
   // Collision detection.
@@ -515,12 +531,8 @@ function detectObjectsCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
   // rect1.x + rect1.w > rect2.x &&
   // rect1.y < rect2.y + rect2.h &&
   // rect1.h + rect1.y > rect2.y
-  if (x1 < x2 + w2 &&
+  return x1 < x2 + w2 &&
       x1 + w1 > x2 &&
       y1 < y2 + h2 &&
-      h1 + y1 > y2) {
-      return true;
-  }
-
-  return false;
+      h1 + y1 > y2;
 }
