@@ -123,23 +123,61 @@ function pacmanGame() {
 // Create walls.
 function createWalls() {
     if (wallsCreated == false) {
-        for (var i = 0; i < walls.length; i++) {
 
-            // Get line.
-            x = walls[i][0][0];
-            y = walls[i][0][1];
-            width = walls[i][1];
-            height = walls[i][2];
+        // // Get line.
+        // x = tShape[0][0];
+        // y = tShape[0][1];
+        // width = tShape[1];
+        // height = walls[2];
+        //
+        // wallContext.fillStyle = "blue";
+        // wallContext.fillRect(x, y, width, height);
+        // wallContext.stroke();
 
-            wallContext.fillStyle = "blue";
-            wallContext.fillRect(x, y, width, height);
-            wallContext.stroke();
-        }
+        walls.forEach(shape => {
+          do {
+            collisionDetected = true;
+            if (!detectWallToWallCollision(shape)) {
+              for (var i = 0; i < shape.length; i++) {
+
+                  // Get initial .
+                  x = shape[i][0];
+                  y = shape[i][1];
+                  wallContext.fillStyle = "blue";
+                  wallContext.fillRect(x, y, pillDistance, pillDistance);
+                  wallContext.stroke();
+              }
+              collisionDetected = false;
+            }
+
+
+
+          } while (collisionDetected);
+        });
         wallsCreated = true;
+
+        // for (var i = 0; i < walls.length; i++) {
+        //
+        //     // Get line.
+        //     x = walls[i][0][0];
+        //     y = walls[i][0][1];
+        //     width = walls[i][1];
+        //     height = walls[i][2];
+        //
+        //     wallContext.fillStyle = "blue";
+        //     wallContext.fillRect(x, y, width, height);
+        //     wallContext.stroke();
+        // }
+        // wallsCreated = true;
     }
     else {
         canvasContext.drawImage(wallContext.canvas, 0, 0);
     }
+}
+
+// Check if current shape collides with other walls.
+function detectWallToWallCollision(shape) {
+
 }
 
 // Create pills.
