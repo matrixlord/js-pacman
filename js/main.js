@@ -56,7 +56,7 @@ const pillSize = 4;
 
 // Rendered pill.
 let canvasPill = document.createElement("canvas"),
-  pillContext = canvasPill.getContext("2d");
+pillContext = canvasPill.getContext("2d");
 canvasPill.width = canvasPill.height = pillSize;
 pillContext.arc(
   pillSize / 2,
@@ -71,7 +71,7 @@ pillContext.fill();
 
 // Blue pill.
 let canvasBluePill = document.createElement("canvas"),
-  pillBlueContext = canvasBluePill.getContext("2d");
+pillBlueContext = canvasBluePill.getContext("2d");
 canvasBluePill.width = canvasBluePill.height = pillSize * 2;
 pillBlueContext.arc(pillSize, pillSize, pillSize, 0, 2 * Math.PI, false);
 pillBlueContext.fillStyle = "yellow";
